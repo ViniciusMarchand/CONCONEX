@@ -1,5 +1,4 @@
 # CONCONEX
-CONCONEX
 
 Plataforma de Gestão e Comunicação para Trabalhadores Autônomos
 Este projeto tem como objetivo oferecer uma plataforma web e mobile para facilitar a organização, comunicação e gestão de projetos para trabalhadores autônomos da área de obras, como designers, pintores, arquitetos e engenheiros.
