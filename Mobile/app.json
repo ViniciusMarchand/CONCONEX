@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "conconex",
+    "slug": "conconex",
+    "version": "1.0.0",
+    "main": "./App/App.tsx",
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "experiments": {
+      "tsconfigPaths": true
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": ["node_modules/@expo-google-fonts/inter/Roboto_400Regular.ttf"]
+        }
+      ]
+    ],
+    "orientation": "portrait",
+    "icon": "./Assets/logos/icone_dark_mode.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./Assets/logos/icone_dark_mode.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#27374D"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.conconex"
+    }
+  }
+}
