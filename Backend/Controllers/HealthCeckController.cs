@@ -9,16 +9,10 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class HealthCheckController : ControllerBase
+public class HealthCheckController(ILogger<HealthCheckController> logger, IVerificationCodeService verificationCodesService) : ControllerBase
 {
-    private readonly ILogger<HealthCheckController> _logger;
-    private readonly IVerificationCodeService _verificationCodesService;
-
-    public HealthCheckController(ILogger<HealthCheckController> logger, IVerificationCodeService verificationCodesService)
-    {
-        _logger = logger;
-        _verificationCodesService = verificationCodesService;
-    }
+    private readonly ILogger<HealthCheckController> _logger = logger;
+    private readonly IVerificationCodeService _verificationCodesService = verificationCodesService;
 
     [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

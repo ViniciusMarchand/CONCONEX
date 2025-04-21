@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Backend.DTO;
 using Backend.Repositories.Interfaces;
 using Backend.Exceptions;
+using Backend.Infrastructure;
 
 namespace Backend.Repositories;
 
@@ -28,7 +29,7 @@ public class AuthRepository(ApplicationDbContext context) : IAuthRepository
     {
         try
         {
-            _context.Users.Add(user);
+            await _context.Users.AddAsync(user);
 
             await _context.SaveChangesAsync();
 
@@ -50,6 +51,8 @@ public class AuthRepository(ApplicationDbContext context) : IAuthRepository
         }
     }
 
+    
+
     public async Task Delete(User user)
     {
         _context.Users.Remove(user);
@@ -59,6 +62,12 @@ public class AuthRepository(ApplicationDbContext context) : IAuthRepository
     public async Task Update(User user)
     {
         _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task CreateAuthorizationAsync(Authorization authorization)
+    {
+        await _context.Authorizations.AddAsync(authorization);
         await _context.SaveChangesAsync();
     }
 }

@@ -4,7 +4,6 @@ using Backend.Extensions;
 using Backend.Infrastructure;
 using Backend.Models;
 using Backend.Repositories;
-using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -105,17 +105,14 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.Configure<MongoDbSettings>(
 builder.Configuration.GetSection("VerificationCodesDatabase"));
 
-// 🔹 Adiciona MongoDbSettings ao sistema de configuração
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 
-// 🔹 Registra o IMongoClient como um singleton
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
     var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
     return new MongoClient(settings.ConnectionString);
 });
 
-// 🔹 Registra o MongoDbInitializer
 builder.Services.AddSingleton<MongoDbInitializer>();
 builder.Services.AddSingleton<VerificationCodeRepository>();
 
@@ -124,7 +121,9 @@ builder.Services.AddApplicationServices();
 
 
 builder.Services.AddControllersWithViews()
-    .AddNewtonsoftJson();
+    .AddNewtonsoftJson(x =>
+    x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+    
 
 var app = builder.Build();
 
@@ -136,8 +135,12 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseStaticFiles(); 
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.InjectStylesheet("/custom.css"); 
+    });
 }
 
 app.UseHttpsRedirection();

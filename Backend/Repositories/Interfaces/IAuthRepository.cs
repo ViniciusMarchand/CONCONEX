@@ -10,5 +10,6 @@ public interface IAuthRepository
     Task<User> Register(User user);
     Task Delete(User user);
     Task Update(User user);
+    Task CreateAuthorizationAsync(Authorization authorization);
 }
 

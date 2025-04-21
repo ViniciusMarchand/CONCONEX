@@ -1,8 +1,8 @@
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Backend.DTO;
 using Backend.Exceptions;
 using Backend.Models;
-using Backend.Repositories;
 using Backend.Repositories.Interfaces;
 using Backend.Services.Interfaces;
 
@@ -10,11 +10,13 @@ using Backend.Services.Interfaces;
 namespace Backend.Services;
 public partial class AuthService(
     IAuthRepository authRepository, 
-    ITokenGeneratorService tokenGeneratorService
+    ITokenGeneratorService tokenGeneratorService, 
+    IHttpContextAccessor httpContextAccessor
 ) : IAuthService
 {
     readonly IAuthRepository _authRepository = authRepository;
     readonly ITokenGeneratorService _tokenGeneratorService = tokenGeneratorService;
+    readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
 
     public async Task<AccessTokenDTO> Login(UserLoginDTO dto)
@@ -51,7 +53,8 @@ public partial class AuthService(
             Password = Password,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
-            Email = dto.Email
+            Email = dto.Email,
+            PhoneNumber = dto.PhoneNumber
         };
         
         return await _authRepository.Register(user);
@@ -79,4 +82,15 @@ public partial class AuthService(
     [GeneratedRegex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$")]
     private static partial Regex MyRegex();
 
+    public string FindUserIdByClaims()
+    {
+        string userIdString = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException("User not authenticated");;
+
+        return userIdString;
+    }
+
+    public async Task CreateAuthorizationAsync(Authorization authorization)
+    {
+        await _authRepository.CreateAuthorizationAsync(authorization);
+    }
 }
