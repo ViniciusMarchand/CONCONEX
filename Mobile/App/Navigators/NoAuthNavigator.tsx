@@ -1,11 +1,12 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Layout from "App/Screens/NoAuth/Layout";
 import Login from "App/Screens/NoAuth/Login";
-import { View } from "react-native";
+import { NoAuthScreens } from "../Constants/Screens";
 
 export default function NoAuthNavigator() {
-  const Stack = createNativeStackNavigator();
-
+  const Stack = createNativeStackNavigator();  
+  const { LoginScreen, SignUpScreen } = NoAuthScreens;
+  
   return (
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
@@ -15,7 +16,7 @@ export default function NoAuthNavigator() {
           </Layout>
         )}
       >
-        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name={LoginScreen} component={Login} />
       </Stack.Navigator>
   );
 }

@@ -9,8 +9,8 @@ interface Props {
 
 export default function CustomText({ children, className }: Props) {
     return (
-        <Text className={clsx("text-font-color dark:text-font-color-dark", className)}>
-          {children}
-        </Text>
+      <Text className={clsx("text-font-color", "dark:text-font-color-dark", className)}>
+        {children}
+      </Text>
     )
 }
