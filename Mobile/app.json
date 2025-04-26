@@ -24,7 +24,7 @@
     "splash": {
       "image": "./Assets/logos/icone_dark_mode.png",
       "resizeMode": "contain",
-      "backgroundColor": "#27374D"
+      "backgroundColor": "#111c28"
     },
     "assetBundlePatterns": [
       "**/*"
