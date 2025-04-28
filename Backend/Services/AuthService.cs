@@ -29,6 +29,10 @@ public partial class AuthService(
             throw new EntityNotFoundException("Email or password invalid.");
         }
 
+        if(user.EmailConfirmed == false)
+        {
+            throw new UnauthorizedAccessException("Email not confirmed.");
+        }
 
         AccessTokenDTO token = new()
         {
@@ -45,7 +49,7 @@ public partial class AuthService(
         var emailRegex = MyRegex();
 
         if (!emailRegex.IsMatch(dto.Email))
-            throw new Exception("Invalid email");
+            throw new Exception("Invalid email.");
         
         var user = new User
         {

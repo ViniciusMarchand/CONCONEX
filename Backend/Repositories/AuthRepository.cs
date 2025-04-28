@@ -1,5 +1,4 @@
 using Backend.Models;
-using Backend.Services;
 using Microsoft.EntityFrameworkCore;
 using Backend.DTO;
 using Backend.Repositories.Interfaces;
@@ -15,13 +14,13 @@ public class AuthRepository(ApplicationDbContext context) : IAuthRepository
 
     public async Task<User> FindUserByEmail(string email)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new EntityNotFoundException("Usuário não encontrado");
+        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new EntityNotFoundException("User not found.");
     }
 
-    public async Task<User> Login(UserLoginDTO dto) 
+    public async Task<User> Login(UserLoginDTO dto)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == dto.Username) ?? throw new KeyNotFoundException("Usuário não encontrado ou senha inválida");
-        
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email) ?? throw new KeyNotFoundException("Invalid email or password.");
+
         return user;
     }
 
@@ -34,24 +33,25 @@ public class AuthRepository(ApplicationDbContext context) : IAuthRepository
             await _context.SaveChangesAsync();
 
             return user;
-        } 
+        }
         catch (DbUpdateException e)
         {
-            var message = e.InnerException?.Message ?? string.Empty;
-            if (message.Contains("IX_Users_Username"))
+            var innerMessage = e.InnerException?.Message ?? string.Empty;
+
+            if (innerMessage.Contains("Username") || innerMessage.Contains("IX_Users_Username"))
             {
-                throw new Exception("Username unavailable");
+                throw new Exception("Username unavailable.");
             }
-            else if (message.Contains("IX_Users_Email"))
+            else if (innerMessage.Contains("Email") || innerMessage.Contains("IX_Users_Email"))
             {
-                throw new Exception("Email unavailable");
+                throw new Exception("Email unavailable.");
             }
 
-            throw new Exception("Erro ao criar usuário.");
+            throw new Exception($"Erro ao criar usuário. Detalhes: {innerMessage}");
         }
     }
 
-    
+
 
     public async Task Delete(User user)
     {

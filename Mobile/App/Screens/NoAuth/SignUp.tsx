@@ -1,9 +1,141 @@
-import CustomText from "@/App/Components/Common/CustomText";
+import CustomButton from "@/App/Components/Common/CustomButton";
+import Inputs from "@/App/Components/Common/Inputs";
+import Line from "@/App/Components/Common/Line";
+import Title from "@/App/Components/Common/Title";
+import TouchableText from "@/App/Components/Common/TouchableText";
+import { LockIcon, MailIcon } from "@/App/Components/Ui/icon";
+import { Formik } from "formik";
+import { View, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
+import { PhoneIcon, User } from 'lucide-react-native';
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { NoAuthStackParamList } from "@/App/Types/NavigatorTypes";
+import { NoAuthScreens } from "@/App/Constants/Screens";
+import { errorToast, successToast } from "@/App/Utils/Toasts";
+import registrationValidationSchema from "@/App/Validations/RegistrationFormValidation copy";
+import { InputProps } from "@/App/Types";
+import { apiUrl } from "@/App/Constants/Env";
+import authApi from "@/App/Api/AuthApi";
+import { translateError } from "@/App/Utils/ErrorTranslations";
 
 export default function SignUp() {
+    const navigation = useNavigation<StackNavigationProp<NoAuthStackParamList>>();
+    const { LoginScreen } = NoAuthScreens;
+
+    const formInputs: InputProps[] = [
+        {
+            name: 'username',
+            icon: User,
+            placeholder: 'Nome de usuário',
+            autoCapitalize: "none",
+        },
+        {
+            name: 'firstName',
+            icon: User,
+            placeholder: 'Nome',
+        },
+        {
+            name: 'lastName',
+            icon: User,
+            placeholder: 'Sobrenome',
+        },
+        {
+            name: 'phoneNumber',
+            icon: PhoneIcon,
+            placeholder: 'Telefone',
+            autoCapitalize: 'none',
+            keyboardType: "phone-pad",
+            textContentType: "telephoneNumber",
+            autoCorrect: false,
+            maxLength: 11,
+        },
+        {
+            name: 'email',
+            icon: MailIcon,
+            placeholder: 'E-mail',
+            textContentType: "emailAddress",
+            autoCapitalize: 'none',
+            keyboardType: "email-address",
+
+        },
+        {
+            name: 'password',
+            icon: LockIcon,
+            placeholder: 'Senha',
+            secureTextEntry: true,
+            autoCapitalize: 'none',
+            textContentType: "password",
+
+        },
+        {
+            name: 'confirmPassword',
+            icon: LockIcon,
+            placeholder: 'Confirme sua senha',
+            secureTextEntry: true,
+            autoCapitalize: 'none',
+            textContentType: "password",
+        }
+    ];
+
+    const onSubmit = async (values: any) => {
+        try {
+            const formValues = await registrationValidationSchema.validate(values);
+            await authApi.register(formValues);
+            successToast('Usuário registrado com sucesso!');
+            navigation.navigate(NoAuthScreens.EmailVerificationScreen, { email: formValues.email });
+        } catch (error: any) {
+            errorToast(translateError(error.response?.data));
+        }
+    }
+
     return (
-        <CustomText>
-            teste
-        </CustomText>
-    )
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+            className="w-full flex-1"
+            
+        >
+            <ScrollView
+                contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', width: '100%' }}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+            >
+                <Formik
+                    initialValues={{ 
+                        username: '',
+                        firstName: '',
+                        lastName: '',
+                        phoneNumber: '',
+                        email: '',
+                        password: '',
+                        confirmPassword: ''
+                    }}
+                    onSubmit={onSubmit}
+                >
+                    {({ handleChange, handleBlur, handleSubmit, values }) => (
+                        <View className='flex-1 justify-center w-full gap-5 px-10'>
+                            <View className='w-full'>
+                                <View className='gap-2 my-4'>
+                                    <Title className='text-center'>Crie sua conta</Title>
+                                </View>
+                            </View>
+                            <View className="gap-4">
+                                <Inputs handleChange={handleChange} InputsInfo={formInputs} />
+                            </View>
+                            <CustomButton onPress={() => handleSubmit()}>
+                                Registrar-se
+                            </CustomButton>
+                            <Line />
+                            <TouchableText
+                                className='text-center text-tertiary dark:text-tertiary-dark'
+                                onPress={() => navigation.navigate(LoginScreen)}
+                            >
+                                Já tenho uma conta
+                            </TouchableText>
+                        </View>
+                    )}
+                </Formik>
+            </ScrollView>
+        </KeyboardAvoidingView>
+    );
 }

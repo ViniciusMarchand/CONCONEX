@@ -1,27 +1,12 @@
-interface Form {
-    email: string;
-    password: string;
-}
+import * as Yup from 'yup';
 
-const validateLogin = ({email, password} : Form) => {
-
-    const errors: string[] = []
-
-    if (!email) {
-        errors.push("Preencha todos os campos");
-        return errors;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-        errors.push('E-mail inválido');
-    }
+const loginValidationSchema = Yup.object().shape({
+  email: Yup.string()
+    .required('Preencha todos os campos')
+    .email('E-mail inválido'),
     
-    if (!password) {
-        errors.push("Preencha todos os campos");
-        return errors;
-    } else if (password.length < 6) {
-        errors.push('Senha deve ter no mínimo 6 caracteres');
-    }
+  password: Yup.string()
+    .required('Preencha todos os campos')
+});
 
-    return errors;
-};
-
-export default validateLogin;
+export default loginValidationSchema;

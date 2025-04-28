@@ -1,8 +1,11 @@
 import { StatusBar, View } from "react-native";
-
+import { } from "expo-system-ui";
 import { ReactNode } from "react";
+import { setBackgroundColorAsync } from "expo-system-ui";
 
 export default function Layout({ children }: { children: ReactNode }) {
+
+    setBackgroundColorAsync('#000');
 
     return (
         <>

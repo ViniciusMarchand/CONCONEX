@@ -99,6 +99,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()  // Permite qualquer origem (React Native, browsers, etc.)
+              .AllowAnyMethod()  // GET, POST, PUT, DELETE, etc.
+              .AllowAnyHeader(); // Headers como Content-Type, Authorization
+    });
+});
+
+
+
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 
@@ -118,7 +130,7 @@ builder.Services.AddSingleton<VerificationCodeRepository>();
 
 builder.Services.AddApplicationServices();
 
-
+builder.WebHost.UseUrls("http://localhost:5188", "http://192.168.3.8:5188"); 
 
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(x =>
@@ -143,6 +155,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseRouting();
 

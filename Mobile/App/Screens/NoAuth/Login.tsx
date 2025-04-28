@@ -1,43 +1,48 @@
 import CustomButton from '@/App/Components/Common/CustomButton';
 import CustomText from '@/App/Components/Common/CustomText';
-import InputText from '@/App/Components/Common/InputText';
+import TextInput from '@/App/Components/Common/InputText';
 import { LockIcon, MailIcon } from '@/App/Components/Ui/icon';
 import Logo from 'App/Components/Common/Logo';
 import Title from 'App/Components/Common/Title';
 import { View } from 'react-native';
 import { Formik } from 'formik';
-import { useState } from 'react';
-import validateLogin from '@/App/Validations/LoginFormValidation';
 import Line from '@/App/Components/Common/Line';
-import Toast from 'react-native-toast-message';
 import TouchableText from '@/App/Components/Common/TouchableText';
+import { useNavigation } from '@react-navigation/native';
+import { NoAuthScreens } from '@/App/Constants/Screens';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { NoAuthStackParamList } from '@/App/Types/NavigatorTypes';
+import loginValidationSchema from '@/App/Validations/LoginFormValidation';
+import { LoginFormValues } from '@/App/Types';
+import authApi from '@/App/Api/AuthApi';
+import { errorToast } from '@/App/Utils/Toasts';
 
 export default function Login() {
-  const [errors, setErrors] = useState<string[]>([]);
+  const navigation = useNavigation<StackNavigationProp<NoAuthStackParamList>>();
 
-  const showToast = (text:string) => {
-    Toast.show({
-      type: 'error',
-      text1: text,
-      swipeable: true,
-    });
+  const { SignUpScreen, EmailVerificationScreen } = NoAuthScreens;
+
+  const onSubmit = async (values: LoginFormValues) => {
+
+    try {
+      const formValues = await loginValidationSchema.validate(values);
+      const res = await authApi.login(formValues);
+      
+    } catch (error: any) {
+      const { status } = error; 
+      if(status === 401) {
+        navigation.navigate(EmailVerificationScreen, { email: values.email });
+      } else {
+        errorToast("Email ou senha inválidos");
+      } 
+    }
+    
   }
 
   return (
     <Formik
       initialValues={{ email: '', password: '' }}
-      onSubmit={values => {
-        const errors: string[] = validateLogin(values);
-        setErrors(errors);
-
-        if (errors.length > 0) {
-          showToast(errors[0]);
-          return;
-        }
-        
-
-        // login()
-      }}
+      onSubmit={onSubmit}
     >
       {({ handleChange, handleBlur, handleSubmit, values }) => (
         <View className='flex-1 justify-center w-full gap-5'>
@@ -52,7 +57,7 @@ export default function Login() {
           </View>
           
           <View className='px-10 gap-7'>
-            <InputText
+            <TextInput
               icon={MailIcon}
               placeholder='E-mail'
               keyboardType="email-address"
@@ -63,7 +68,7 @@ export default function Login() {
               value={values.email}
             /> 
 
-            <InputText
+            <TextInput
               icon={LockIcon}
               placeholder='Senha'
               secureTextEntry
@@ -80,7 +85,8 @@ export default function Login() {
             <Line/>
             <TouchableText 
               className='text-center text-tertiary dark:text-tertiary-dark'
-              >
+              onPress={() => navigation.navigate(SignUpScreen)}
+            > 
                 Criar conta
             </TouchableText>
           </View>

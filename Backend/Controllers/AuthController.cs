@@ -38,6 +38,14 @@ public class AuthController
         {
             return NotFound(e.Message);
         }
+        catch(UnauthorizedAccessException e)
+        {
+            return Unauthorized(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
 
@@ -54,10 +62,23 @@ public class AuthController
 
             return Ok("User registred");
         }
+        catch (EmailIsAlreadyInUseException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (UsernameIsAlreadyInUseException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (InvalidEmailException e)
+        {
+            return BadRequest(e.Message);
+        }
         catch (Exception e)
         {
-            return NotFound(e.Message);
+            return BadRequest(e.Message);
         }
+
     }
 
     [HttpGet("resend-verification-code/{email}")]
