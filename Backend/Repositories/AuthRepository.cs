@@ -17,6 +17,12 @@ public class AuthRepository(ApplicationDbContext context) : IAuthRepository
         return await _context.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new EntityNotFoundException("User not found.");
     }
 
+    public async Task<User> FindByUsername(string username)
+    {
+        return await _context.Users.FirstOrDefaultAsync(u => u.Username == username) ?? throw new EntityNotFoundException("User not found.");
+    }
+
+
     public async Task<User> Login(UserLoginDTO dto)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email) ?? throw new KeyNotFoundException("Invalid email or password.");
@@ -69,5 +75,17 @@ public class AuthRepository(ApplicationDbContext context) : IAuthRepository
     {
         await _context.Authorizations.AddAsync(authorization);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<UserResponseDTO> UserInfo(string id)
+    {
+        return await _context.Users.Where(u => u.Id == id).Select(u => new UserResponseDTO
+        {
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Email = u.Email!,
+            PhoneNumber = u.PhoneNumber!,
+            Username = u.Username
+        }).FirstOrDefaultAsync() ?? throw new EntityNotFoundException("User not found.");
     }
 }

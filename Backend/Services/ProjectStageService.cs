@@ -19,7 +19,7 @@ public class ProjectStageService(IProjectStageRepository projectStageRepository,
         return await _projectStageRepository.FindAllAsync();
     }
 
-    public async Task<IEnumerable<ProjectStage>> FindByProjectIdAsync(Guid projectId)
+    public async Task<IEnumerable<ProjectStageResponseDTO>> FindByProjectIdAsync(Guid projectId)
     {
         return await _projectStageRepository.FindByProjectIdAsync(projectId);
     }

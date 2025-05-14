@@ -5,5 +5,7 @@ namespace Backend.Services.Interfaces;
 
 public interface IProjectService : ICrudService<Project, ProjectDTO>
 {
-    Task<IEnumerable<Project>> FindByAdminIdAsync();
+    Task<IEnumerable<ProjectResponseDTO>> FindByAdminIdAsync();
+    Task<IEnumerable<ProjectResponseDTO>> FindByUserIdAsync();
+    Task AddUserToProject(Guid projectId, string username);
 }

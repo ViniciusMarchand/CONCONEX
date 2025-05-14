@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IProjectStageRepository, ProjectStageRepository>();
         services.AddScoped<IProjectStageService, ProjectStageService>();
+        services.AddScoped<IHttpContextService, HttpContextService>();
 
         
         // services.AddScoped<VerificationCodesService>();   

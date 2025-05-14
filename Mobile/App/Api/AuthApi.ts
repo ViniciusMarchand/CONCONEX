@@ -1,5 +1,5 @@
 import { LoginFormValues, RegistrationFormValues } from "../Types";
-import { AxiosNoAuth } from "./Axios";
+import { Axios, AxiosNoAuth } from "./Axios";
 
 const authApi = {
     login: async (user:LoginFormValues) => {
@@ -37,6 +37,15 @@ const authApi = {
                 throw error;
             })
     },
+
+    userInfo: async () => {
+        const URL = "api/auth/user-info";
+        return await Axios.get(URL)
+        .then((res) => res)
+        .catch(error => {
+            throw error;
+        })
+    }
 
 }
 

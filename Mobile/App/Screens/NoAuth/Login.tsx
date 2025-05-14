@@ -9,29 +9,33 @@ import { Formik } from 'formik';
 import Line from '@/App/Components/Common/Line';
 import TouchableText from '@/App/Components/Common/TouchableText';
 import { useNavigation } from '@react-navigation/native';
-import { NoAuthScreens } from '@/App/Constants/Screens';
+import { AuthScreens, NoAuthScreens } from '@/App/Constants/Screens';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { NoAuthStackParamList } from '@/App/Types/NavigatorTypes';
+import { AuthStackParamList, NoAuthStackParamList } from '@/App/Types/NavigatorTypes';
 import loginValidationSchema from '@/App/Validations/LoginFormValidation';
 import { LoginFormValues } from '@/App/Types';
 import authApi from '@/App/Api/AuthApi';
 import { errorToast } from '@/App/Utils/Toasts';
+import { useAuth } from '@/App/Contexts/AuthContext';
 
 export default function Login() {
-  const navigation = useNavigation<StackNavigationProp<NoAuthStackParamList>>();
+  const navigationNoAuth = useNavigation<StackNavigationProp<NoAuthStackParamList>>();
+  const navigationAuth = useNavigation<StackNavigationProp<AuthStackParamList>>();
 
   const { SignUpScreen, EmailVerificationScreen } = NoAuthScreens;
+
+  const { login } = useAuth();
 
   const onSubmit = async (values: LoginFormValues) => {
 
     try {
       const formValues = await loginValidationSchema.validate(values);
-      const res = await authApi.login(formValues);
-      
+      await login(formValues); 
+
     } catch (error: any) {
       const { status } = error; 
       if(status === 401) {
-        navigation.navigate(EmailVerificationScreen, { email: values.email });
+        navigationNoAuth.navigate(EmailVerificationScreen, { email: values.email });
       } else {
         errorToast("Email ou senha inválidos");
       } 
@@ -85,7 +89,7 @@ export default function Login() {
             <Line/>
             <TouchableText 
               className='text-center text-tertiary dark:text-tertiary-dark'
-              onPress={() => navigation.navigate(SignUpScreen)}
+              onPress={() => navigationNoAuth.navigate(SignUpScreen)}
             > 
                 Criar conta
             </TouchableText>

@@ -2,15 +2,21 @@ import { StatusBar, View } from "react-native";
 import { } from "expo-system-ui";
 import { ReactNode } from "react";
 import { setBackgroundColorAsync } from "expo-system-ui";
+import clsx from "clsx";
 
-export default function Layout({ children }: { children: ReactNode }) {
+interface Props {
+    children: ReactNode,
+    className?:string
+}
+
+export default function Layout({ children, className } : Props) {
 
     setBackgroundColorAsync('#000');
 
     return (
         <>
             <StatusBar translucent backgroundColor="transparent" />
-            <View className="flex-1 justify-center items-center bg-primary-light dark:bg-primary-dark px-5">
+            <View className={clsx("flex-1 justify-center items-center bg-primary dark:bg-primary-dark px-5", className)}>
                 {children}
             </View>
         </>

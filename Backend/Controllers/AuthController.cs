@@ -4,6 +4,8 @@ using Backend.DTO;
 using Backend.Exceptions;
 using Backend.Models;
 using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,23 +17,21 @@ public class AuthController
 (
     IAuthService authService,
     IEmailService emailService,
-    IVerificationCodeService verificationCodeService,
-    UserManager<User> userManager
+    IVerificationCodeService verificationCodeService
 ) : ControllerBase
 {
 
     readonly IAuthService _authService = authService;
     readonly IEmailService _emailService = emailService;
-    readonly UserManager<User> _userManager = userManager;
     readonly IVerificationCodeService _verificationCodeService = verificationCodeService;
 
 
     [HttpPost("login")]
-    public async Task<ActionResult<AccessTokenDTO>> Login(UserLoginDTO dto)
+    public async Task<ActionResult<LoginResponseDTO>> Login(UserLoginDTO dto)
     {
         try
         {
-            AccessTokenDTO token = await _authService.Login(dto);
+            LoginResponseDTO token = await _authService.Login(dto);
             return Ok(token);
         }
         catch (KeyNotFoundException e)
@@ -50,7 +50,7 @@ public class AuthController
 
 
     [HttpPost("register")]
-    public async Task<ActionResult<AccessTokenDTO>> Register(UserDTO dto)
+    public async Task<ActionResult<LoginResponseDTO>> Register(UserDTO dto)
     {
         try
         {
@@ -122,7 +122,13 @@ public class AuthController
         {
             return BadRequest(e.Message);
         }
+    }
 
+    [HttpGet("user-info")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public async Task<UserResponseDTO> UserInfo()
+    {
+        return await _authService.UserInfo();
     }
 
 }

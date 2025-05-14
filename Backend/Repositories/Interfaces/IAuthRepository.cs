@@ -11,5 +11,7 @@ public interface IAuthRepository
     Task Delete(User user);
     Task Update(User user);
     Task CreateAuthorizationAsync(Authorization authorization);
+    Task<UserResponseDTO> UserInfo(string id);
+    Task<User> FindByUsername(string username);
 }
 

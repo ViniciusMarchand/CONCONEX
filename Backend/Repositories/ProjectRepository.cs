@@ -1,3 +1,4 @@
+using Backend.DTO;
 using Backend.Enums;
 using Backend.Infrastructure;
 using Backend.Models;
@@ -18,9 +19,35 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
         return project;
     }
 
-    public async Task<IEnumerable<Project>> FindByAdminIdAsync(string adminId)
+    public async Task<IEnumerable<ProjectResponseDTO>> FindByAdminIdAsync(string adminId)
     {
-        return await _context.Projects.Where(p => p.Authorizations.Any(a => a.UserId == adminId && a.Role == Roles.Admin)).Include(p => p.ProjectStages).ToListAsync();
+        IEnumerable<ProjectResponseDTO> projects = await _context.Projects
+            .Where(p => p.Authorizations
+            .Any(a => a.UserId == adminId && a.Role == Roles.Admin))
+            .Select(p => new ProjectResponseDTO() {
+                Id = p.Id,
+                Title = p.Title,
+                Description = p.Description,
+                Status = p.Status.ToString(),
+                Deadline = p.Deadline,
+            })
+            .ToListAsync();
+
+        foreach(ProjectResponseDTO project in projects)
+        {
+            var admin = _context.Authorizations.Where(a => a.ProjectId == project.Id && a.Role == Roles.Client).Select(a => new UserInfoDTO
+            {
+                FirstName = a.User.FirstName,
+                LastName = a.User.LastName,
+            })
+            .FirstOrDefault();
+
+            if (admin != null)
+            {
+                project.AdminName = admin;
+            }
+        }
+        return projects;
     }
 
     public async Task<Project?> FindByIdAsync(Guid id)
@@ -38,5 +65,36 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
         _context.Projects.Update(project);
         await _context.SaveChangesAsync();
         return project;
+    }
+
+    public async Task<IEnumerable<ProjectResponseDTO>> FindByUserIdAsync(string userId) {
+        IEnumerable<ProjectResponseDTO> projects = await _context.Projects
+            .Where(p => p.Authorizations
+            .Any(a => a.UserId == userId && a.Role == Roles.Client))
+            .Select(p => new ProjectResponseDTO() {
+                Id = p.Id,
+                Title = p.Title,
+                Description = p.Description,
+                Status = p.Status.ToString(),
+                Deadline = p.Deadline,
+            })
+            .ToListAsync();
+
+        foreach(ProjectResponseDTO project in projects)
+        {
+            var admin = _context.Authorizations.Where(a => a.ProjectId == project.Id && a.Role == Roles.Admin).Select(a => new UserInfoDTO
+            {
+                FirstName = a.User.FirstName,
+                LastName = a.User.LastName,
+            })
+            .FirstOrDefault();
+
+            if (admin != null)
+            {
+                project.AdminName = admin;
+            }
+        }
+
+        return projects;
     }
 }

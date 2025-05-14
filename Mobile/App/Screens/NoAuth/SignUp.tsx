@@ -3,79 +3,21 @@ import Inputs from "@/App/Components/Common/Inputs";
 import Line from "@/App/Components/Common/Line";
 import Title from "@/App/Components/Common/Title";
 import TouchableText from "@/App/Components/Common/TouchableText";
-import { LockIcon, MailIcon } from "@/App/Components/Ui/icon";
 import { Formik } from "formik";
 import { View, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
-import { PhoneIcon, User } from 'lucide-react-native';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { NoAuthStackParamList } from "@/App/Types/NavigatorTypes";
 import { NoAuthScreens } from "@/App/Constants/Screens";
 import { errorToast, successToast } from "@/App/Utils/Toasts";
 import registrationValidationSchema from "@/App/Validations/RegistrationFormValidation copy";
-import { InputProps } from "@/App/Types";
-import { apiUrl } from "@/App/Constants/Env";
 import authApi from "@/App/Api/AuthApi";
 import { translateError } from "@/App/Utils/ErrorTranslations";
+import { SignUpForm } from "@/App/Constants/Forms";
 
 export default function SignUp() {
     const navigation = useNavigation<StackNavigationProp<NoAuthStackParamList>>();
     const { LoginScreen } = NoAuthScreens;
-
-    const formInputs: InputProps[] = [
-        {
-            name: 'username',
-            icon: User,
-            placeholder: 'Nome de usuário',
-            autoCapitalize: "none",
-        },
-        {
-            name: 'firstName',
-            icon: User,
-            placeholder: 'Nome',
-        },
-        {
-            name: 'lastName',
-            icon: User,
-            placeholder: 'Sobrenome',
-        },
-        {
-            name: 'phoneNumber',
-            icon: PhoneIcon,
-            placeholder: 'Telefone',
-            autoCapitalize: 'none',
-            keyboardType: "phone-pad",
-            textContentType: "telephoneNumber",
-            autoCorrect: false,
-            maxLength: 11,
-        },
-        {
-            name: 'email',
-            icon: MailIcon,
-            placeholder: 'E-mail',
-            textContentType: "emailAddress",
-            autoCapitalize: 'none',
-            keyboardType: "email-address",
-
-        },
-        {
-            name: 'password',
-            icon: LockIcon,
-            placeholder: 'Senha',
-            secureTextEntry: true,
-            autoCapitalize: 'none',
-            textContentType: "password",
-
-        },
-        {
-            name: 'confirmPassword',
-            icon: LockIcon,
-            placeholder: 'Confirme sua senha',
-            secureTextEntry: true,
-            autoCapitalize: 'none',
-            textContentType: "password",
-        }
-    ];
 
     const onSubmit = async (values: any) => {
         try {
@@ -120,7 +62,7 @@ export default function SignUp() {
                                 </View>
                             </View>
                             <View className="gap-4">
-                                <Inputs handleChange={handleChange} InputsInfo={formInputs} />
+                                <Inputs handleChange={handleChange} InputsInfo={SignUpForm} />
                             </View>
                             <CustomButton onPress={() => handleSubmit()}>
                                 Registrar-se

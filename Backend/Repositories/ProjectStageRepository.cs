@@ -1,3 +1,5 @@
+using Backend.DTO;
+using Backend.Enums;
 using Backend.Infrastructure;
 using Backend.Models;
 using Backend.Repositories.Interfaces;
@@ -17,9 +19,19 @@ public class ProjectStageRepository(ApplicationDbContext context) : IProjectStag
         return project;
     }
 
-    public async Task<IEnumerable<ProjectStage>> FindByProjectIdAsync(Guid projectId)
+    public async Task<IEnumerable<ProjectStageResponseDTO>> FindByProjectIdAsync(Guid projectId)
     {
-        return await _context.ProjectsStages.Where(ps => ps.ProjectId == projectId).ToListAsync();
+        return await _context.ProjectsStages.Where(ps => ps.ProjectId == projectId).OrderBy(ps => ps.CreatedAt).
+        Select(ps => new ProjectStageResponseDTO
+        {
+            Deadline = ps.Deadline,
+            Description = ps.Description,
+            Id = ps.Id,
+            Title = ps.Title,
+            Status = ps.Status.ToString(),
+            Order = ps.Order
+        })
+        .ToListAsync();
     }
 
     public async Task<ProjectStage?> FindByIdAsync(Guid id)

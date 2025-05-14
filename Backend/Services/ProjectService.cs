@@ -20,7 +20,7 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
         return await _projectRepository.FindAllAsync();
     }
 
-    public async Task<IEnumerable<Project>> FindByAdminIdAsync()
+    public async Task<IEnumerable<ProjectResponseDTO>> FindByAdminIdAsync()
     {
         string userId = _authService.FindUserIdByClaims();
         return await _projectRepository.FindByAdminIdAsync(userId);
@@ -88,4 +88,24 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
 
         return _projectRepository.UpdateAsync(project);
     }
+
+    public async Task<IEnumerable<ProjectResponseDTO>> FindByUserIdAsync()
+    {
+        string userId = _authService.FindUserIdByClaims();
+        return await _projectRepository.FindByUserIdAsync(userId);
+    }
+
+    public async Task AddUserToProject(Guid projectId, string username)
+    {
+        Project project = await _projectRepository.FindByIdAsync(projectId) ?? throw new EntityNotFoundException("Project not found");
+        User user = await _authService.FindByUsername(username);
+
+        Authorization authorization = new() {
+            Project = project,
+            User = user,
+            Role = Roles.Client
+        };
+
+        await _authService.CreateAuthorizationAsync(authorization);
+    } 
 }

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
-[Route("api/projects-stage")]
+[Route("api/project-stage")]
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class ProjectStageController(IProjectStageService projectStageService) : ControllerBase
@@ -67,9 +67,9 @@ public class ProjectStageController(IProjectStageService projectStageService) : 
     }
 
     [HttpGet("project/{id}")]
-    public async Task<ActionResult<IEnumerable<ProjectStage>>> GetProjectsByAdminId(Guid id)
+    public async Task<ActionResult<IEnumerable<ProjectStageResponseDTO>>> GetProjectsByAdminId(Guid id)
     {
-        IEnumerable<ProjectStage> projects = await _projectStageService.FindByProjectIdAsync(id);
+        IEnumerable<ProjectStageResponseDTO> projects = await _projectStageService.FindByProjectIdAsync(id);
 
         return Ok(projects);
     }

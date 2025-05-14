@@ -5,5 +5,5 @@ namespace Backend.Services.Interfaces;
 
 public interface IProjectStageService : ICrudService<ProjectStage, ProjectStageDTO>
 {
-    Task<IEnumerable<ProjectStage>> FindByProjectIdAsync(Guid projectId);
+    Task<IEnumerable<ProjectStageResponseDTO>> FindByProjectIdAsync(Guid projectId);
 }

@@ -1,5 +1,4 @@
 using Backend.DTO;
-using Backend.Exceptions;
 using Backend.Models;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
-[Route("api/projects")]
+[Route("api/project")]
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class ProjectController(IProjectService projectService) : ControllerBase
@@ -66,13 +65,25 @@ public class ProjectController(IProjectService projectService) : ControllerBase
         Ok("Project removed.");
     }
 
-    [HttpGet("user")]
-    public async Task<ActionResult<IEnumerable<Project>>> GetProjectsByAdminId()
+    [HttpGet("admin")]
+    public async Task<ActionResult<IEnumerable<ProjectResponseDTO>>> GetProjectsByAdminId()
     {
-        IEnumerable<Project> projects = await _projectService.FindByAdminIdAsync();
-
+        IEnumerable<ProjectResponseDTO> projects = await _projectService.FindByAdminIdAsync();
         return Ok(projects);
     }
 
+    [HttpGet("user")]
+    public async Task<ActionResult<IEnumerable<ProjectResponseDTO>>> GetProjectsByUserId()
+    {
+        IEnumerable<ProjectResponseDTO> projects = await _projectService.FindByUserIdAsync();
+        return Ok(projects);
+    }
+
+    [HttpPost("add-user")]
+    public async Task<ActionResult> AddUserToProject([FromBody] AddUserDTO dto)
+    {
+        await _projectService.AddUserToProject(dto.ProjectId, dto.Username);
+        return Ok();
+    }
    
 }

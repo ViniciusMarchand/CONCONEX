@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Backend.DTO;
 using Backend.Exceptions;
@@ -11,15 +10,15 @@ namespace Backend.Services;
 public partial class AuthService(
     IAuthRepository authRepository, 
     ITokenGeneratorService tokenGeneratorService, 
-    IHttpContextAccessor httpContextAccessor
+    IHttpContextService httpContextService
 ) : IAuthService
 {
     readonly IAuthRepository _authRepository = authRepository;
     readonly ITokenGeneratorService _tokenGeneratorService = tokenGeneratorService;
-    readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    readonly IHttpContextService _httpContextService = httpContextService;
 
 
-    public async Task<AccessTokenDTO> Login(UserLoginDTO dto)
+    public async Task<LoginResponseDTO> Login(UserLoginDTO dto)
     {
 
         User user = await _authRepository.Login(dto);
@@ -34,12 +33,14 @@ public partial class AuthService(
             throw new UnauthorizedAccessException("Email not confirmed.");
         }
 
-        AccessTokenDTO token = new()
+        UserResponseDTO userResponse = await _authRepository.UserInfo(user.Id);
+        LoginResponseDTO response = new()
         {
-            AccessToken = _tokenGeneratorService.GenerateToken(user)
+            AccessToken = _tokenGeneratorService.GenerateToken(user),
+            User = userResponse
         };
-
-        return token;
+        
+        return response;
     }
 
     public async Task<User> Register(UserDTO dto)
@@ -88,7 +89,7 @@ public partial class AuthService(
 
     public string FindUserIdByClaims()
     {
-        string userIdString = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException("User not authenticated");;
+        string userIdString = _httpContextService.FindUserId();
 
         return userIdString;
     }
@@ -96,5 +97,17 @@ public partial class AuthService(
     public async Task CreateAuthorizationAsync(Authorization authorization)
     {
         await _authRepository.CreateAuthorizationAsync(authorization);
+    }
+
+    public async Task<UserResponseDTO> UserInfo()
+    {
+        string userId = FindUserIdByClaims();
+
+        return await _authRepository.UserInfo(userId);
+    }
+
+    public async Task<User> FindByUsername(string username)
+    {
+        return await _authRepository.FindByUsername(username);
     }
 }
