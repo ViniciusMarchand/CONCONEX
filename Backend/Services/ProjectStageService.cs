@@ -4,15 +4,17 @@ using Backend.Exceptions;
 using Backend.Models;
 using Backend.Repositories.Interfaces;
 using Backend.Services.Interfaces;
+using Org.BouncyCastle.Crypto.Engines;
 
 namespace Backend.Services;
 
-public class ProjectStageService(IProjectStageRepository projectStageRepository, IAuthService authService, IProjectRepository projectRepository) : IProjectStageService
+public class ProjectStageService(IProjectStageRepository projectStageRepository, IAuthService authService, IProjectRepository projectRepository, S3Service s3Service) : IProjectStageService
 {
 
     private readonly IProjectStageRepository _projectStageRepository = projectStageRepository;
     private readonly IAuthService _authService = authService;
     private readonly IProjectRepository _projectRepository = projectRepository;
+    private readonly S3Service _s3Service = s3Service;
 
     public async Task<IEnumerable<ProjectStage>> FindAllAsync()
     {
@@ -33,12 +35,12 @@ public class ProjectStageService(IProjectStageRepository projectStageRepository,
     {
 
         Project project = await _projectRepository.FindByIdAsync(dto.ProjectId) ?? throw new EntityNotFoundException("Project not found.");
-        
+
 
         ProjectStage projectStage = new()
         {
             Title = dto.Title,
-            Description = dto.Description,       
+            Description = dto.Description,
             Status = dto.Status,
             Project = project,
             Deadline = dto.Deadline
@@ -54,7 +56,7 @@ public class ProjectStageService(IProjectStageRepository projectStageRepository,
 
         string userId = _authService.FindUserIdByClaims();
 
-        Authorization authorization = project.Authorizations.Where(a => a.UserId == userId && a.Role == Roles.Admin).FirstOrDefault() ?? throw new UnauthorizedAccessException("You are not authorized to update this project");;
+        Authorization authorization = project.Authorizations.Where(a => a.UserId == userId && a.Role == Roles.Admin).FirstOrDefault() ?? throw new UnauthorizedAccessException("You are not authorized to update this project"); ;
 
         projectStage.Title = dto.Title;
         projectStage.Description = dto.Description;
@@ -71,11 +73,42 @@ public class ProjectStageService(IProjectStageRepository projectStageRepository,
 
         string userId = _authService.FindUserIdByClaims();
 
-        Authorization authorization = project.Authorizations.Where(a => a.UserId == userId && a.Role == Roles.Admin).FirstOrDefault() ?? throw new UnauthorizedAccessException("You are not authorized to update this project");;
+        Authorization authorization = project.Authorizations.Where(a => a.UserId == userId && a.Role == Roles.Admin).FirstOrDefault() ?? throw new UnauthorizedAccessException("You are not authorized to update this project"); ;
 
         projectStage.IsDeleted = true;
 
         await _projectStageRepository.UpdateAsync(projectStage);
     }
+
+    public async Task<Image> SaveImageAsync(ImageDTO dto)
+    {
+        ProjectStage projectStage = await _projectStageRepository.FindByIdAsync(dto.ProjectStageId) ?? throw new EntityNotFoundException("Project stage not found.");
+
+        Guid novoId = Guid.NewGuid();
+
+        string path = await _s3Service.AddProjectStageImage(dto.Image, projectStage.ProjectId, projectStage.Id, novoId);
+
+        Image image = new()
+        {
+            Id = novoId,
+            Path = path,
+            ProjectStage = projectStage,
+            FileExtension = Path.GetExtension(dto.Image.FileName)
+        };
+
+        return await _projectStageRepository.SaveImageAsync(image);
+    }
+
+    public async Task RemoveImageAsync(Guid id)
+    {
+        Image image = await _projectStageRepository.FindImageById(id) ?? throw new EntityNotFoundException("Image not found.");
+        ProjectStage projectStage = await _projectStageRepository.FindByIdAsync(image.ProjectStageId)
+        ?? throw new EntityNotFoundException("Project stage not found.");
+
+        _ = await _s3Service.RemoveProjectStageImage(projectStage.ProjectId, projectStage.Id, image.Id, image.FileExtension);
+
+        await _projectStageRepository.RemoveImageAsync(image);
+    }
+
 
 }

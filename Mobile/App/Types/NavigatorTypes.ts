@@ -1,4 +1,4 @@
-import { ProjectResponseDTO } from ".";
+import { ProjectResponseDTO, ProjectStage } from ".";
 
 export type NoAuthStackParamList = {
     Login: undefined;
@@ -10,11 +10,13 @@ export type AuthStackParamList = {
     Home: undefined;
     TabNavigator: undefined;
     ProjectDetails: ProjectResponseDTO;
-    ProjectForm: undefined;
+    ProjectForm: undefined | ProjectResponseDTO;
+    ProjectStageForm: undefined | ProjectStage;
 };
 
 export type AsyncState<T> = {
   data: T | null; 
   loading: boolean;  
   error: Error | null;
+  execute?:Function;
 };

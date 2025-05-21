@@ -17,7 +17,7 @@ interface Props {
 
 export default function ProjectCard({ project }: Props) {
 
-    const { id , title, description, status: StatusString, deadline, adminName } = project;
+    const { id , title, description, status: StatusString, deadline, userInfo } = project;
     const image = project?.image;
     const status = stringToStatus(StatusString);
     const { fontColor } = useColors();
@@ -26,12 +26,13 @@ export default function ProjectCard({ project }: Props) {
         <CardLayout className="p-2 flex justify-between mb-4">
             <View className="w-full h-56 flex justify-center items-center border border-tertiary dark:border-tertiary-dark rounded-[10px]">
                 <Image
-                    source={!image ? NoImage : image}
+                    source={!image ? NoImage : { uri:`${image}?update=${Date.now()}` }}
                     style={{
                         width: '100%',
                         height: '100%',
+                        borderRadius:8,
                     }}
-                    contentFit="contain"
+                    contentFit="cover"
                 />
             </View>
             <View className="px-3 pt-6 gap-2 h-64 flex-col justify-between">
@@ -54,13 +55,13 @@ export default function ProjectCard({ project }: Props) {
                         <StatusBar status={status} />
                         <View className="flex-row  items-center flex-wrap max-w-full">
                             {
-                                adminName.firstName ? <>
+                                userInfo?.firstName ? <>
                                 <AntDesign name="user" size={24} color={fontColor} />
                                 <CustomText
                                     className="text-justify leading-6 text-base"
                                     numberOfLines={1}
                                     ellipsizeMode="tail"
-                                >{`${adminName.firstName} ${adminName.lastName}`}</CustomText>
+                                >{`${userInfo.firstName} ${userInfo.lastName}`}</CustomText>
                                 </>
                                 : <CustomText className="text-sm">Sem usuários cadastrados no projeto</CustomText>
                             }

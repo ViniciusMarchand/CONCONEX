@@ -77,7 +77,7 @@ export const optionsStatusSelect = [
         value: "Pending"
     },
     {
-        label: "progresso",
+        label: "Progresso",
         value: "InProgress"
     },
     {

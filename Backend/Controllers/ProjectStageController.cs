@@ -55,11 +55,11 @@ public class ProjectStageController(IProjectStageService projectStageService) : 
             return BadRequest(ModelState);
         }
 
-        ProjectStage project  = await _projectStageService.UpdateAsync(id, dto);
+        ProjectStage project = await _projectStageService.UpdateAsync(id, dto);
         return Ok(project);
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task Delete(Guid id)
     {
         await _projectStageService.DeleteAsync(id);
@@ -75,5 +75,22 @@ public class ProjectStageController(IProjectStageService projectStageService) : 
     }
 
 
+    [HttpDelete("image/{id}")]
+    public async Task DeleteImage(Guid id)
+    {
+        await _projectStageService.RemoveImageAsync(id);
+        Ok("Image removed.");
+    }
+    
+    [HttpPost("image")]
+    public async Task<ActionResult<Image>> CreateImage([FromForm] ImageDTO dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
+        Image image = await _projectStageService.SaveImageAsync(dto);
+        return Ok(image);
+    }
 }

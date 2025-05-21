@@ -8,12 +8,13 @@ using Backend.Services.Interfaces;
 
 namespace Backend.Services;
 
-public class ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, IAuthService authService) : IProjectService
+public class ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, IAuthService authService, S3Service s3Service) : IProjectService
 {
 
     private readonly IProjectRepository _projectRepository = projectRepository;
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IAuthService _authService = authService;
+    private readonly S3Service _s3Service = s3Service;
 
     public async Task<IEnumerable<Project>> FindAllAsync()
     {
@@ -37,15 +38,21 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
         
         User user = await _userRepository.FindByIdAsync(userId) ?? throw new EntityNotFoundException("User not found");
 
-
+        Guid projectId = Guid.NewGuid();
         Project newProject = new()
         {
+            Id = projectId,
             Title = dto.Title,
-            Description = dto.Description,     
-            Deadline = dto.Deadline,       
-            Status = dto.Status
+            Description = dto.Description,
+            Deadline = dto.Deadline,
+            Status = dto.Status,
         };
 
+        if (dto.Image != null)
+        {
+            string path = await _s3Service.UploadProjectPictureAsync(dto.Image, projectId);
+            newProject.Image = path; 
+        }
 
         Project project = await _projectRepository.AddAsync(newProject);
 
@@ -55,8 +62,9 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
             User  = user,
             Role = Roles.Admin
         };
-
         await _authService.CreateAuthorizationAsync(authorization);
+
+
         return project;
     }
 
@@ -73,6 +81,13 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
         project.Deadline = dto.Deadline;
         project.Status = dto.Status;
 
+        if (dto.Image != null)
+        {
+            string path = await _s3Service.UploadProjectPictureAsync(dto.Image, project.Id);
+            project.Image = path;
+        }
+
+
         return await _projectRepository.UpdateAsync(project);
     }
 
@@ -82,7 +97,7 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
 
         string userId = _authService.FindUserIdByClaims();
 
-        Authorization authorization = project.Authorizations.Where(a => a.UserId == userId && a.Role == Roles.Admin).FirstOrDefault() ?? throw new UnauthorizedAccessException("You are not authorized to update this project");
+        Authorization authorization = project.Authorizations.Where(a => a.UserId == userId && a.Role == Roles.Admin && project.Id == a.ProjectId).FirstOrDefault() ?? throw new UnauthorizedAccessException("You are not authorized to delete this project");
 
         project.IsDeleted = true;
 
@@ -99,6 +114,10 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
     {
         Project project = await _projectRepository.FindByIdAsync(projectId) ?? throw new EntityNotFoundException("Project not found");
         User user = await _authService.FindByUsername(username);
+        bool isUserInProject = await _projectRepository.IsUserInProject(user.Id, projectId);
+
+        if(isUserInProject)
+            throw new ClientIsAlreadyAddedException("User is already added.");
 
         Authorization authorization = new() {
             Project = project,

@@ -21,14 +21,18 @@ public class ProjectStageRepository(ApplicationDbContext context) : IProjectStag
 
     public async Task<IEnumerable<ProjectStageResponseDTO>> FindByProjectIdAsync(Guid projectId)
     {
-        return await _context.ProjectsStages.Where(ps => ps.ProjectId == projectId).OrderBy(ps => ps.CreatedAt).
-        Select(ps => new ProjectStageResponseDTO
+        return await _context.ProjectsStages
+        .Where(ps => ps.ProjectId == projectId && !ps.IsDeleted)
+        .OrderBy(ps => ps.CreatedAt)
+        .Include(ps => ps.Images)
+        .Select(ps => new ProjectStageResponseDTO
         {
             Deadline = ps.Deadline,
             Description = ps.Description,
             Id = ps.Id,
             Title = ps.Title,
             Status = ps.Status.ToString(),
+            Images = ps.Images,
             Order = ps.Order
         })
         .ToListAsync();
@@ -49,5 +53,23 @@ public class ProjectStageRepository(ApplicationDbContext context) : IProjectStag
         _context.ProjectsStages.Update(project);
         await _context.SaveChangesAsync();
         return project;
+    }
+
+    public async Task<Image> SaveImageAsync(Image image)
+    {
+        await _context.Images.AddAsync(image);
+        await _context.SaveChangesAsync();
+        return image;
+    }
+
+    public async Task RemoveImageAsync(Image image)
+    {
+        _context.Images.Remove(image);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<Image?> FindImageById(Guid id)
+    {
+        return await _context.Images.FindAsync(id);
     }
 }

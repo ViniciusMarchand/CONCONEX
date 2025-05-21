@@ -23,13 +23,17 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
     {
         IEnumerable<ProjectResponseDTO> projects = await _context.Projects
             .Where(p => p.Authorizations
-            .Any(a => a.UserId == adminId && a.Role == Roles.Admin))
-            .Select(p => new ProjectResponseDTO() {
+            .Any(a => a.UserId == adminId && a.Role == Roles.Admin) && !p.IsDeleted)
+            .OrderBy(p => p.Title)
+            .Select(p => new ProjectResponseDTO()
+            {
                 Id = p.Id,
                 Title = p.Title,
                 Description = p.Description,
                 Status = p.Status.ToString(),
                 Deadline = p.Deadline,
+                AdminId = p.Authorizations.Where(a => a.Role == Roles.Admin).Select(a => a.UserId).FirstOrDefault(),
+                Image = p.Image,
             })
             .ToListAsync();
 
@@ -39,12 +43,13 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
             {
                 FirstName = a.User.FirstName,
                 LastName = a.User.LastName,
+                UserId = a.UserId
             })
             .FirstOrDefault();
 
             if (admin != null)
             {
-                project.AdminName = admin;
+                project.UserInfo = admin;
             }
         }
         return projects;
@@ -52,12 +57,26 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
 
     public async Task<Project?> FindByIdAsync(Guid id)
     {
-        return await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+        return await _context.Projects.Include(p => p.Authorizations).FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<IEnumerable<Project>> FindAllAsync()
     {
         return await _context.Projects.OrderByDescending(p => p.CreatedAt).Take(20).ToListAsync();
+    }
+
+    public async Task<bool> IsUserInProject(string userId, Guid projectId)
+    {
+        Authorization? authorization = await _context.Authorizations.Where(a => a.ProjectId == projectId && a.UserId == userId).FirstOrDefaultAsync();
+
+        if(authorization == null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public async Task<Project> UpdateAsync(Project project)
@@ -70,13 +89,16 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
     public async Task<IEnumerable<ProjectResponseDTO>> FindByUserIdAsync(string userId) {
         IEnumerable<ProjectResponseDTO> projects = await _context.Projects
             .Where(p => p.Authorizations
-            .Any(a => a.UserId == userId && a.Role == Roles.Client))
-            .Select(p => new ProjectResponseDTO() {
+            .Any(a => a.UserId == userId && a.Role == Roles.Client) && !p.IsDeleted)
+            .OrderBy(p => p.Title)
+            .Select(p => new ProjectResponseDTO()
+            {
                 Id = p.Id,
                 Title = p.Title,
                 Description = p.Description,
                 Status = p.Status.ToString(),
                 Deadline = p.Deadline,
+                Image = p.Image,
             })
             .ToListAsync();
 
@@ -86,15 +108,18 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
             {
                 FirstName = a.User.FirstName,
                 LastName = a.User.LastName,
+                UserId = a.UserId
             })
             .FirstOrDefault();
 
             if (admin != null)
             {
-                project.AdminName = admin;
+                project.UserInfo = admin;
             }
         }
 
         return projects;
     }
+
+    
 }

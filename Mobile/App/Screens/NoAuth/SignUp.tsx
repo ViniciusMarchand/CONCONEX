@@ -26,7 +26,11 @@ export default function SignUp() {
             successToast('Usuário registrado com sucesso!');
             navigation.navigate(NoAuthScreens.EmailVerificationScreen, { email: formValues.email });
         } catch (error: any) {
-            errorToast(translateError(error.response?.data));
+            if(error.response?.data) {
+                errorToast(translateError(error.response?.data));
+            } else {
+                errorToast(error.message);
+            }
         }
     }
 

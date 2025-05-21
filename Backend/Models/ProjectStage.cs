@@ -15,6 +15,9 @@ namespace Backend.Models
         [JsonIgnore]
         public Project Project { get; set; } = new();
         public Guid ProjectId { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Image> Images { get; set; } = [];
         
     }
 }

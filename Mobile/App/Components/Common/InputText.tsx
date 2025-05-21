@@ -4,7 +4,7 @@ import { ColorValue, TextInputProps } from "react-native";
 import { SvgProps } from "react-native-svg";
 
 interface Props extends TextInputProps{
-    icon?: IIconComponentType<SvgProps | {
+    icon?: IIconComponentType<SvgProps | any |{
         fill?: ColorValue;
         stroke?: ColorValue;
     }>,

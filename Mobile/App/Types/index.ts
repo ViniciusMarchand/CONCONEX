@@ -35,6 +35,7 @@ export type RegistrationFormValues = {
 }
 
 export type User = {
+    id:string;
     username:string;
     firstName:string;
     lastName:string;
@@ -59,22 +60,45 @@ export type ProjectResponseDTO = {
     description: string;
     status: string;
     deadline: Date;
-    adminName: FullName;
+    userInfo: UserInfoDTO;
+    adminId:string;
     image?:string;
 }
 
+export type ProjectStageResponseDTO = {
+    id: string | undefined;
+    title: string | undefined;
+    description: string | undefined;
+    status: string | undefined;
+    deadline: Date | undefined;
+    adminId:string | undefined;
+    image?:string | undefined;
+    projectId:string | undefined;
+}
+
+export type Image = {
+    id: string,
+    path: string,
+    fileExtension: string,
+    projectStageId: string,
+}
+
 export type ProjectStage = {
+    id:string
     title:string;
     description:string;
     status:string;
     deadline:string;
-    order:string;
-    image?:string
+    order?:string;
+    image?:string,
+    projectId:string,
+    images: Image[]
 }
 
-export type FullName = {
+export type UserInfoDTO = {
     firstName: string;
     lastName: string;
+    userId:string;
 }
 
 export type ProjectRequestDTO = {
@@ -83,4 +107,17 @@ export type ProjectRequestDTO = {
     status: string;
     deadline: Date;
     // image?:string;
+}
+
+export type ProjectStageRequestDTO = {
+    title: string;
+    description?: string;
+    status: string;
+    deadline: Date;
+    // image?:string;
+}
+
+export type AddUserRequest = {
+    projectId: string;
+    username:string;
 }

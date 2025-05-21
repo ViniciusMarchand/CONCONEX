@@ -12,7 +12,8 @@ public class ProjectDTO
 
     public string Description { get; set; } = string.Empty;
 
-    public DateTime Deadline { get; set; } = DateTime.Now; 
+    public DateTime Deadline { get; set; } = DateTime.Now;
+    public IFormFile? Image { get; set; } 
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public Status Status { get; set; } = Status.Pending;

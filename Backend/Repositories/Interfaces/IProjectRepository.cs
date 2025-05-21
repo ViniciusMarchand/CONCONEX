@@ -7,4 +7,5 @@ public interface IProjectRepository : ICrudRepository<Project>
 {
     Task<IEnumerable<ProjectResponseDTO>> FindByAdminIdAsync(string adminId);
     Task<IEnumerable<ProjectResponseDTO>> FindByUserIdAsync(string userId);
+    Task<bool> IsUserInProject(string userId, Guid projectId);
 }

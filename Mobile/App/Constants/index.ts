@@ -13,6 +13,11 @@ export enum Status {
     Canceld,
 }
 
+export enum FormStatus {
+    Add,
+    Edit
+}
+
 export const statusColor = {
     Pending:"gray-500",
     InProgress:"green-400",

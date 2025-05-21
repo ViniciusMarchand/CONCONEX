@@ -17,12 +17,12 @@ public class TokenGeneratorService(IConfiguration configuration) : ITokenGenerat
         var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]!);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[]
-            {
+            Subject = new ClaimsIdentity(
+            [
                 new (ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new ("email_confirmed", user.EmailConfirmed.ToString())
-            }),
-            Expires = DateTime.UtcNow.AddHours(1),
+            ]),
+            Expires = DateTime.UtcNow.AddMonths(6),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             Issuer = _configuration["Jwt:Issuer"], // Add this line
             Audience = _configuration["Jwt:Audience"]

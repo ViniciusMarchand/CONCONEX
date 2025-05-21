@@ -81,6 +81,7 @@ public class AuthRepository(ApplicationDbContext context) : IAuthRepository
     {
         return await _context.Users.Where(u => u.Id == id).Select(u => new UserResponseDTO
         {
+            Id = u.Id,
             FirstName = u.FirstName,
             LastName = u.LastName,
             Email = u.Email!,

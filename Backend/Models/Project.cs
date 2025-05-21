@@ -10,6 +10,7 @@ public class Project : BaseEntity
     public string Description { get; set; } = string.Empty;
     public Status Status { get; set; } = Status.Pending; 
     public DateTime Deadline { get; set; }
+    public string Image { get; set; } = string.Empty;
 
     // [JsonIgnore]
     public ICollection<ProjectStage> ProjectStages { get; set; } = [];

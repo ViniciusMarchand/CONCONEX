@@ -4,6 +4,7 @@ using Backend.Extensions;
 using Backend.Infrastructure;
 using Backend.Models;
 using Backend.Repositories;
+using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,28 +24,32 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 
 
-    
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.SignIn.RequireConfirmedEmail = true;
 });
 
 builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()  
-    .AddDefaultTokenProviders();  
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "CONCONEX", Version = "v1" });
 
+    c.MapType<IFormFile>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = "binary"
+    });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Enter the JWT token below (without 'Bearer ' prefix)",
         Name = "Authorization",
-        
+
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
@@ -65,6 +70,7 @@ builder.Services.AddSwaggerGen(c =>
             Array.Empty<string>()
         }
     });
+    
 });
 
 
@@ -81,7 +87,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is not configured"))),
             ClockSkew = TimeSpan.Zero,
-            
+
         };
         options.Events = new JwtBearerEvents
         {
@@ -128,14 +134,23 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 builder.Services.AddSingleton<MongoDbInitializer>();
 builder.Services.AddSingleton<VerificationCodeRepository>();
 
+// Carrega configurações (appsettings.json + variáveis de ambiente)
+builder.Configuration
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables(); // Prioriza variáveis de ambiente
+
+// Registra o serviço
+builder.Services.AddScoped<S3Service>();
+
+
 builder.Services.AddApplicationServices();
 
-builder.WebHost.UseUrls("http://localhost:5188", "http://192.168.3.8:5188"); 
+builder.WebHost.UseUrls("http://localhost:5188", "http://192.168.3.8:5188");
 
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(x =>
     x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-    
+
 
 var app = builder.Build();
 
@@ -147,11 +162,11 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseStaticFiles(); 
+    app.UseStaticFiles();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.InjectStylesheet("/custom.css"); 
+        c.InjectStylesheet("/custom.css");
     });
 }
 

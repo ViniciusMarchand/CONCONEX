@@ -10,7 +10,7 @@ interface Props extends TextProps{
 
 export default function Title({ children, className, ...props } : Props) {
     return (
-        <CustomText className={clsx("text-font-color dark:text-font-color-dark text-3xl capitalize", className)} {...props}>
+        <CustomText className={clsx("text-font-color dark:text-font-color-dark text-3xl", className)} {...props}>
           {children}
         </CustomText>
     )

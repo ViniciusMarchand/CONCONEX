@@ -1,3 +1,6 @@
+using System.Collections;
+using Backend.Models;
+
 namespace Backend.DTO;
 
 public class ProjectStageResponseDTO
@@ -8,4 +11,5 @@ public class ProjectStageResponseDTO
     public string Status { get; set; } = string.Empty;
     public DateTime Deadline { get; set; }
     public int Order { get; set; }
+    public ICollection<Image> Images { get; set; } = [];
 }

@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { LoginFormValues, LoginResponseDTO, User } from "../Types";
+import { LoginFormValues, User } from "../Types";
 import { contextError } from "../Constants/Errors";
 import authApi from "../Api/AuthApi";
 import { logoutAsync, setAccessToken } from "../Utils/SecureStore";
@@ -29,7 +29,7 @@ export default function AuthProvider({children} : Props) {
                 const res = await authApi.userInfo();
                 setUser(res.data);
             } catch (error) {
-                console.warn(error)
+
             }
         })()
     },[]);

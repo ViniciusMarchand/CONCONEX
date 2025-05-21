@@ -13,6 +13,7 @@ export const AuthScreens = {
     ProjectDetailsScreen: "ProjectDetails",
     ProjectsScreen:"Projetos",
     ProjectFormScreen:"ProjectForm",
+    ProjectStageFormScreen:"ProjectStageForm",
 } as const;
 
 export const MainTabsList = [

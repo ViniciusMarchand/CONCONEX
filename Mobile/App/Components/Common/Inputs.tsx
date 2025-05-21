@@ -6,10 +6,11 @@ import { View } from "react-native";
 
 interface Props {
     handleChange: Function;
-    InputsInfo: InputProps[]
+    InputsInfo: InputProps[];
+    initialValues?:any;
 }
 
-export default function Inputs({handleChange, InputsInfo} : Props) {
+export default function Inputs({handleChange, InputsInfo, initialValues} : Props) {
 
     return (
         InputsInfo.map((input, index) => {

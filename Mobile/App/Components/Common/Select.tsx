@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList } from 'react-native';
 import CustomText from './CustomText';
 
@@ -10,12 +10,18 @@ interface Item {
 interface CustomPickerProps {
   label?: string;
   items: Item[];
+  value: string,
   onSelect: (item: Item) => void;
 }
 
-const  CustomPicker: React.FC<CustomPickerProps> = ({ label, items, onSelect }) => {
+const  CustomPicker: React.FC<CustomPickerProps> = ({ label, items, onSelect, value }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+
+  useEffect(() => {
+    const found = items.find(item => item.value === value) || null;
+    setSelectedItem(found);
+  }, [value, items]);
 
   return (
     <View className="mb-4">
