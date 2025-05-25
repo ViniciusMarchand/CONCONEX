@@ -37,7 +37,7 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
             })
             .ToListAsync();
 
-        foreach(ProjectResponseDTO project in projects)
+        foreach (ProjectResponseDTO project in projects)
         {
             var admin = _context.Authorizations.Where(a => a.ProjectId == project.Id && a.Role == Roles.Client).Select(a => new UserInfoDTO
             {
@@ -69,7 +69,7 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
     {
         Authorization? authorization = await _context.Authorizations.Where(a => a.ProjectId == projectId && a.UserId == userId).FirstOrDefaultAsync();
 
-        if(authorization == null)
+        if (authorization == null)
         {
             return false;
         }
@@ -86,7 +86,8 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
         return project;
     }
 
-    public async Task<IEnumerable<ProjectResponseDTO>> FindByUserIdAsync(string userId) {
+    public async Task<IEnumerable<ProjectResponseDTO>> FindByUserIdAsync(string userId)
+    {
         IEnumerable<ProjectResponseDTO> projects = await _context.Projects
             .Where(p => p.Authorizations
             .Any(a => a.UserId == userId && a.Role == Roles.Client) && !p.IsDeleted)
@@ -102,7 +103,7 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
             })
             .ToListAsync();
 
-        foreach(ProjectResponseDTO project in projects)
+        foreach (ProjectResponseDTO project in projects)
         {
             var admin = _context.Authorizations.Where(a => a.ProjectId == project.Id && a.Role == Roles.Admin).Select(a => new UserInfoDTO
             {
@@ -121,5 +122,17 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
         return projects;
     }
 
-    
+    public async Task<List<ProjectChatDTO>> FindChats(string userId)
+    {
+        return await _context.Projects.Where(p => !p.IsDeleted && p.Authorizations.Any(a => a.UserId == userId)).Select(p => new ProjectChatDTO
+        {
+            ProjectId = p.Id,
+            ProjectImage = p.Image,
+            Status = p.Status.ToString(),
+            ProjectTitle = p.Title,
+            IsAdmin = p.Authorizations.Any(a => a.UserId == userId && a.Role == Roles.Admin),
+            UnreadMessages = 0,
+            LastMessage = null
+        }).AsNoTracking().ToListAsync();
+    }
 }

@@ -169,6 +169,33 @@ namespace Backend.Migrations
                     b.ToTable("ProjectsStages");
                 });
 
+            modelBuilder.Entity("Backend.Models.UserPushToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DeviceInfo")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPushTokens");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -437,7 +464,7 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.Image", b =>
                 {
                     b.HasOne("Backend.Models.ProjectStage", "ProjectStage")
-                        .WithMany()
+                        .WithMany("Images")
                         .HasForeignKey("ProjectStageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -454,6 +481,17 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Backend.Models.UserPushToken", b =>
+                {
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany("UserPushTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -514,9 +552,16 @@ namespace Backend.Migrations
                     b.Navigation("ProjectStages");
                 });
 
+            modelBuilder.Entity("Backend.Models.ProjectStage", b =>
+                {
+                    b.Navigation("Images");
+                });
+
             modelBuilder.Entity("Backend.Models.User", b =>
                 {
                     b.Navigation("Authorizations");
+
+                    b.Navigation("UserPushTokens");
                 });
 #pragma warning restore 612, 618
         }

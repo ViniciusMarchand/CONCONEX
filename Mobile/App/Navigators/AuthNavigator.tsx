@@ -7,26 +7,39 @@ import ProjectDetails from "../Screens/Auth/ProjectDetails";
 import ProjectForm from "../Screens/Auth/ProjectForm";
 import ProjectsProvider from "../Contexts/ProjectsContext";
 import ProjectStageForm from "../Screens/Auth/ProjectStageForm";
+import Messages from "../Screens/Auth/Messages";
+import { SignalRProvider } from "../Contexts/SignalRContext";
+import { useAuth } from "../Contexts/AuthContext";
+import { usePushToken } from "../Hooks/usePushToken";
 
 
 export default function AuthNavigator() {
   const Stack = createNativeStackNavigator<AuthStackParamList>();
-  const { TabNavigator, ProjectDetailsScreen, ProjectFormScreen, ProjectStageFormScreen } = AuthScreens;
+  const { TabNavigator, ProjectDetailsScreen, ProjectFormScreen, ProjectStageFormScreen, ChatScreen } = AuthScreens;
+  const { user } = useAuth();
 
+  if(!user) {
+    return;
+  }
+  usePushToken(user.id);
+  
   return (
-    <ProjectsProvider>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          presentation: 'transparentModal',
+    <SignalRProvider userId={user.id} >
+      <ProjectsProvider>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            presentation: 'transparentModal',
 
-        }}
-      >
-        <Stack.Screen name={TabNavigator} component={MainTabs} />
-        <Stack.Screen name={ProjectDetailsScreen} component={ProjectDetails} />
-        <Stack.Screen name={ProjectFormScreen} component={ProjectForm} />
-        <Stack.Screen name={ProjectStageFormScreen} component={ProjectStageForm} />
-      </Stack.Navigator>
-    </ProjectsProvider>
+          }}
+        >
+          <Stack.Screen name={TabNavigator} component={MainTabs} />
+          <Stack.Screen name={ProjectDetailsScreen} component={ProjectDetails} />
+          <Stack.Screen name={ProjectFormScreen} component={ProjectForm} />
+          <Stack.Screen name={ProjectStageFormScreen} component={ProjectStageForm} />
+          <Stack.Screen name={ChatScreen} component={Messages} />
+        </Stack.Navigator>
+      </ProjectsProvider>
+    </SignalRProvider>
   );
 }

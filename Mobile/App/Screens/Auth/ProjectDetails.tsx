@@ -130,13 +130,14 @@ export default function ProjectDetails({ route }: Props) {
         <>
           <CircularAddUserButton onPress={() => setShowModal(true)} />
           <CircularPlusButton onPress={() => navigate(AuthScreens.ProjectStageFormScreen, {
-            id: '',
-            title: '',
-            description: '',
-            status: '',
-            deadline: '',
-            projectId: id,
-          })} />
+                      id: '',
+                      title: '',
+                      description: '',
+                      status: '',
+                      deadline: '',
+                      projectId: id,
+                      images: [],
+                    })} />
         </>
 
       }

@@ -41,6 +41,12 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.conconex"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5bec6ab9-00ad-40b4-811b-b2b42b8bb400"
+      }
+    },
+    "owner": "vinimarchand"
   }
 }

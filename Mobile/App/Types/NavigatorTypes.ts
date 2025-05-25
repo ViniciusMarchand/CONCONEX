@@ -1,4 +1,4 @@
-import { ProjectResponseDTO, ProjectStage } from ".";
+import { ProjectResponseDTO, ProjectStage, Chat as ChatType } from ".";
 
 export type NoAuthStackParamList = {
     Login: undefined;
@@ -12,6 +12,7 @@ export type AuthStackParamList = {
     ProjectDetails: ProjectResponseDTO;
     ProjectForm: undefined | ProjectResponseDTO;
     ProjectStageForm: undefined | ProjectStage;
+    Chat: ChatType;
 };
 
 export type AsyncState<T> = {

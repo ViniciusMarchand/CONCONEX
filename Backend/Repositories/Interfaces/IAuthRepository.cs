@@ -13,5 +13,7 @@ public interface IAuthRepository
     Task CreateAuthorizationAsync(Authorization authorization);
     Task<UserResponseDTO> UserInfo(string id);
     Task<User> FindByUsername(string username);
+    Task<string?> FindAnotherUserIdFromProject(Guid projectId, string userId);
+    Task<User> FindByIdAsync(string id);
 }
 

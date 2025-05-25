@@ -42,8 +42,10 @@ export default function AuthProvider({children} : Props) {
             setAccessToken(accessToken);
             
         } catch (error) {
+            console.error("Erro ao fazer login:", error);
             throw error;
         }
+
     }
 
     const logout = async () => {

@@ -52,7 +52,7 @@ export default function EmailVerification({ route } : Props) {
             successToast("E-mail confirmado com sucesso!");
             navigation.navigate(LoginScreen);
         } catch (error) {
-            errorToast("Erro ao confirmar o e-mail. Tente novamente mais tarde.");
+            errorToast("Código inválido.");
         }
     }
 

@@ -7,9 +7,10 @@ using Backend.Services.Interfaces;
 
 
 namespace Backend.Services;
+
 public partial class AuthService(
-    IAuthRepository authRepository, 
-    ITokenGeneratorService tokenGeneratorService, 
+    IAuthRepository authRepository,
+    ITokenGeneratorService tokenGeneratorService,
     IHttpContextService httpContextService
 ) : IAuthService
 {
@@ -28,7 +29,7 @@ public partial class AuthService(
             throw new EntityNotFoundException("Email or password invalid.");
         }
 
-        if(user.EmailConfirmed == false)
+        if (user.EmailConfirmed == false)
         {
             throw new UnauthorizedAccessException("Email not confirmed.");
         }
@@ -39,7 +40,7 @@ public partial class AuthService(
             AccessToken = _tokenGeneratorService.GenerateToken(user),
             User = userResponse
         };
-        
+
         return response;
     }
 
@@ -51,7 +52,7 @@ public partial class AuthService(
 
         if (!emailRegex.IsMatch(dto.Email))
             throw new Exception("Invalid email.");
-        
+
         var user = new User
         {
             Username = dto.Username,
@@ -61,7 +62,7 @@ public partial class AuthService(
             Email = dto.Email,
             PhoneNumber = dto.PhoneNumber
         };
-        
+
         return await _authRepository.Register(user);
     }
 
@@ -109,5 +110,10 @@ public partial class AuthService(
     public async Task<User> FindByUsername(string username)
     {
         return await _authRepository.FindByUsername(username);
+    }
+
+    public async Task<string?> FindAnotherUserIdFromProject(Guid projectId, string userId)
+    {
+        return await _authRepository.FindAnotherUserIdFromProject(projectId, userId);
     }
 }

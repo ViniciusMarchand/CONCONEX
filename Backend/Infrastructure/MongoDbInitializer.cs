@@ -12,41 +12,51 @@ public class MongoDbInitializer(IMongoClient mongoClient, IOptions<MongoDbSettin
     private readonly IMongoDatabase _database = mongoClient.GetDatabase(settings.Value.DatabaseName);
     private readonly MongoDbSettings _settings = settings.Value;
 
-    public async Task InitializeDatabaseAsync()
+public async Task InitializeDatabaseAsync()
+{
+    var collectionName = _settings.VerificationCodesName;
+
+    var filter = new BsonDocument("name", collectionName);
+    var collections = await _database.ListCollectionsAsync(new ListCollectionsOptions { Filter = filter });
+
+    if (!await collections.AnyAsync())
     {
-        var collectionName = _settings.VerificationCodesName;
-
-        var filter = new BsonDocument("name", collectionName);
-        var collections = await _database.ListCollectionsAsync(new ListCollectionsOptions { Filter = filter });
-
-        if (!await collections.AnyAsync())
-        {
-            await _database.CreateCollectionAsync(collectionName);
-        }
-
-        var collection = _database.GetCollection<VerificationCode>(collectionName);
-
-        var existingIndexes = await collection.Indexes.ListAsync();
-        var indexExists = false;
-        await existingIndexes.ForEachAsync(index =>
-        {
-            var indexDocument = index.ToBsonDocument();
-            if (indexDocument["key"].AsBsonDocument.Contains("CreatedAt") &&
-                indexDocument.Contains("expireAfterSeconds"))
-            {
-                indexExists = true;
-            }
-        });
-
-        if (!indexExists)
-        {
-            var indexKeysDefinition = Builders<VerificationCode>.IndexKeys.Ascending(v => v.CreatedAt);
-            var indexOptions = new CreateIndexOptions { ExpireAfter = TimeSpan.FromMinutes(30) };
-
-            var indexModel = new CreateIndexModel<VerificationCode>(indexKeysDefinition, indexOptions);
-            await collection.Indexes.CreateOneAsync(indexModel);
-        }
-
-        Console.WriteLine("✅ Banco de dados (mongo) inicializado com sucesso!");
+        await _database.CreateCollectionAsync(collectionName);
     }
+
+    var collection = _database.GetCollection<VerificationCode>(collectionName);
+
+    var existingIndexes = await collection.Indexes.ListAsync();
+    var indexExists = false;
+    await existingIndexes.ForEachAsync(index =>
+    {
+        var indexDocument = index.ToBsonDocument();
+        if (indexDocument["key"].AsBsonDocument.Contains("CreatedAt") &&
+            indexDocument.Contains("expireAfterSeconds"))
+        {
+            indexExists = true;
+        }
+    });
+
+    if (!indexExists)
+    {
+        var indexKeysDefinition = Builders<VerificationCode>.IndexKeys.Ascending(v => v.CreatedAt);
+        var indexOptions = new CreateIndexOptions { ExpireAfter = TimeSpan.FromMinutes(30) };
+
+        var indexModel = new CreateIndexModel<VerificationCode>(indexKeysDefinition, indexOptions);
+        await collection.Indexes.CreateOneAsync(indexModel);
+    }
+
+    var messagesCollectionName = _settings.Collections.MessagesName;
+
+    // Criar coleção de Messages, se não existir
+    var messagesFilter = new BsonDocument("name", messagesCollectionName);
+    var messagesExists = await _database.ListCollectionsAsync(new ListCollectionsOptions { Filter = messagesFilter });
+    if (!await messagesExists.AnyAsync())
+    {
+        await _database.CreateCollectionAsync(messagesCollectionName);
+    }
+
+    Console.WriteLine("✅ Banco de dados (mongo) inicializado com sucesso!");
+}
 }

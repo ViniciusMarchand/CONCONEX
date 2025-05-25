@@ -31,8 +31,7 @@ interface Props {
 }
 export default function StageCard({ stage, index, refresh, isAuth }: Props) {
     const { id, title, description, deadline, status, images, projectId } = stage;
-    const focusedImageIndex = useRef(0);
-    
+    const [focusedImageIndex, setFocusedImageIndex] = useState(0);
 
     const { fontColor } = useColors();
     const { navigate } = useNavigation<StackNavigationProp<AuthStackParamList>>();
@@ -66,7 +65,7 @@ export default function StageCard({ stage, index, refresh, isAuth }: Props) {
             await projectStagesApi.addIamge(formData);
             successToast("Imagem adicionada com sucesso.");
             await refresh();
-        } catch (error:any) {
+        } catch (error: any) {
             errorToast("Erro ao adicionar imagem.");
             console.error(error.response?.data)
         }
@@ -81,13 +80,10 @@ export default function StageCard({ stage, index, refresh, isAuth }: Props) {
                         <View className="flex-row gap-2">
                             {
                                 isAuth && <>
-
-
-
-                                                                        <TouchableOpacity onPress={() => navigate(ProjectStageFormScreen, stage)}>
+                                    <TouchableOpacity onPress={() => pickImageAsync()}>
                                         <MaterialCommunityIcons name="image-plus" size={24} color={fontColor} />
                                     </TouchableOpacity>
-                                    <RemoveProjectStageImageModal refresh={refresh} id={images[focusedImageIndex.current]?.id} />
+                                    <RemoveProjectStageImageModal refresh={refresh} id={images[focusedImageIndex]?.id} setIndexRef={setFocusedImageIndex}/>
 
                                     <TouchableOpacity onPress={() => navigate(ProjectStageFormScreen, stage)}>
                                         <Feather name="edit" size={24} color={fontColor} />
@@ -104,7 +100,7 @@ export default function StageCard({ stage, index, refresh, isAuth }: Props) {
                         </Title>
                         {
                             images.length > 0 &&
-                                <CarouselStage images={images} indexRef={focusedImageIndex}/>
+                            <CarouselStage images={images} indexRef={focusedImageIndex} setIndexRef={setFocusedImageIndex}/>
                         }
                         <CustomText
                             className="text-justify"

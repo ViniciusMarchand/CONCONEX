@@ -89,4 +89,17 @@ public class AuthRepository(ApplicationDbContext context) : IAuthRepository
             Username = u.Username
         }).FirstOrDefaultAsync() ?? throw new EntityNotFoundException("User not found.");
     }
+
+    public async Task<string?> FindAnotherUserIdFromProject(Guid projectId, string userId)
+    {
+        return await _context.Authorizations
+            .Where(a => a.ProjectId == projectId && a.UserId != userId)
+            .Select(a => a.UserId)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<User> FindByIdAsync(string id)
+    {
+        return await _context.Users.FindAsync(id) ?? throw new EntityNotFoundException("User not found.");
+    }
 }

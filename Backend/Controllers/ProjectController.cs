@@ -113,7 +113,7 @@ public class ProjectController(IProjectService projectService, S3Service s3Servi
         var file = dto.Image;
             try
         {
-            var url = await _s3Service.UploadFileAsync(file);
+            var url = await _s3Service.UploadFileAsync(file!);
             return Ok(new { url });
         }
         catch (ArgumentException ex)

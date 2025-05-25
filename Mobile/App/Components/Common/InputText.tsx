@@ -14,7 +14,7 @@ interface Props extends TextInputProps{
 
 export default function TextInput({icon, placeholder, ...props} : Props) {
     return (
-        <Input className="border-0 border-b-[1px] border-tertiary dark:border-tertiary-dark border-solid h-[40px] text-md" >
+        <Input className="border-0 border-b-[1px] border-tertiary dark:border-tertiary-dark border-solid h-[40px] text-md" {...props}>
             {
                 icon &&
                 <InputSlot className="pl-3">

@@ -13,4 +13,5 @@ public interface IAuthService
     Task ValidateUser(string email);
     Task CreateAuthorizationAsync(Authorization authorization);
     Task<UserResponseDTO> UserInfo();
+    Task<string?> FindAnotherUserIdFromProject(Guid projectId, string userId);
 }

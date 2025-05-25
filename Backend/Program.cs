@@ -1,6 +1,7 @@
 using System.Text;
 using Backend.Config;
 using Backend.Extensions;
+using Backend.Hubs;
 using Backend.Infrastructure;
 using Backend.Models;
 using Backend.Repositories;
@@ -109,9 +110,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()  // Permite qualquer origem (React Native, browsers, etc.)
-              .AllowAnyMethod()  // GET, POST, PUT, DELETE, etc.
-              .AllowAnyHeader(); // Headers como Content-Type, Authorization
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader(); 
     });
 });
 
@@ -121,7 +122,7 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 
 
 builder.Services.Configure<MongoDbSettings>(
-builder.Configuration.GetSection("VerificationCodesDatabase"));
+builder.Configuration.GetSection("MongoSettings"));
 
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 
@@ -134,14 +135,13 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 builder.Services.AddSingleton<MongoDbInitializer>();
 builder.Services.AddSingleton<VerificationCodeRepository>();
 
-// Carrega configurações (appsettings.json + variáveis de ambiente)
 builder.Configuration
     .AddJsonFile("appsettings.json")
-    .AddEnvironmentVariables(); // Prioriza variáveis de ambiente
+    .AddEnvironmentVariables(); 
 
-// Registra o serviço
 builder.Services.AddScoped<S3Service>();
 
+builder.Services.AddSignalR();
 
 builder.Services.AddApplicationServices();
 
@@ -178,5 +178,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();

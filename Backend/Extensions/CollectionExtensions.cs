@@ -22,7 +22,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProjectStageRepository, ProjectStageRepository>();
         services.AddScoped<IProjectStageService, ProjectStageService>();
         services.AddScoped<IHttpContextService, HttpContextService>();
-        
+        services.AddScoped<IMessageRepository, MessageRepository>();
+        services.AddScoped<IMessageService, MessageService>();
+        services.AddScoped<IUserPushTokenRepository, UserPushTokenRepository>();
+        services.AddScoped<IUserPushTokenService, UserPushTokenService>();
+        services.AddScoped<IPushNotificationService, PushNotificationService>();
+        services.AddHttpClient();
 
         
         // services.AddScoped<VerificationCodesService>();   

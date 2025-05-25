@@ -12,5 +12,6 @@ namespace Backend.Infrastructure
         public DbSet<ProjectStage> ProjectsStages { get; set; }
         public DbSet<Authorization> Authorizations { get; set; }
         public DbSet<Image> Images { get; set; }
+        public DbSet<UserPushToken> UserPushTokens { get; set; }
     }
 }

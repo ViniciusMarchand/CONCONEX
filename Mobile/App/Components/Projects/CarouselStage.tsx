@@ -11,7 +11,8 @@ type ImageCarouselProps = {
     autoPlay?: boolean;
     loop?: boolean;
     className?: string;
-    indexRef: MutableRefObject<number>;
+    indexRef: number;
+    setIndexRef: Function;
 };
 
 const defaultDataWith6Colors = [
@@ -23,7 +24,7 @@ const defaultDataWith6Colors = [
 ];
  
 
-const CarouselStage = ({ images, autoPlay = false, loop = false, className, indexRef }: ImageCarouselProps) => {
+const CarouselStage = ({ images, autoPlay = false, loop = false, className, indexRef, setIndexRef }: ImageCarouselProps) => {
     const [viewWidth, setViewWidth] = useState(0);
 	const progress = useSharedValue<number>(0);
     // const [activeIndex, setActiveIndex] = useState(0);
@@ -43,7 +44,7 @@ const CarouselStage = ({ images, autoPlay = false, loop = false, className, inde
     const ref = React.useRef<ICarouselInstance>(null);
 
     const onPressPagination = (index: number) => {
-        indexRef.current = index;
+        setIndexRef(index);
         ref.current?.scrollTo({
             index, 
             animated: true,
@@ -78,7 +79,7 @@ const CarouselStage = ({ images, autoPlay = false, loop = false, className, inde
                     autoPlay={autoPlay}
                     autoPlayInterval={3000}
                     loop={loop}
-                    onSnapToItem={(e) => indexRef.current = e}
+                    onSnapToItem={(e) => setIndexRef(e)}
                     onProgressChange={progress}
 
                 />

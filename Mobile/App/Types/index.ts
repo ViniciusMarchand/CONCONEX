@@ -121,3 +121,37 @@ export type AddUserRequest = {
     projectId: string;
     username:string;
 }
+
+export type Attachment = {
+    url:string;
+    type:string;
+}
+
+export type Message = {
+    id:string;
+    projectId:string;
+    userId:string;
+    content:string;
+    sentAt:Date;
+    read:boolean;
+    userFirstName:string;
+    userLastName:string;
+    attachment:Attachment;
+}
+
+export type MessageDTO = {
+    projectId:string;
+    content:string;
+    // read:boolean;
+    // attachment:Attachment;
+}
+
+export type Chat = {
+    projectId:string;
+    projectTitle: string;
+    unreadMessages: number;
+    projectImage: string;
+    status:string;
+    isAdmin:boolean;
+    lastMessage: Message;
+}

@@ -8,13 +8,20 @@ using Backend.Services.Interfaces;
 
 namespace Backend.Services;
 
-public class ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, IAuthService authService, S3Service s3Service) : IProjectService
+public class ProjectService(
+    IProjectRepository projectRepository,
+    IUserRepository userRepository,
+    IAuthService authService,
+    S3Service s3Service,
+    IMessageRepository messageRepository
+) : IProjectService
 {
 
     private readonly IProjectRepository _projectRepository = projectRepository;
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IAuthService _authService = authService;
     private readonly S3Service _s3Service = s3Service;
+    private readonly IMessageRepository _messageRepository = messageRepository;
 
     public async Task<IEnumerable<Project>> FindAllAsync()
     {
@@ -35,7 +42,7 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
     public async Task<Project> SaveAsync(ProjectDTO dto)
     {
         string userId = _authService.FindUserIdByClaims();
-        
+
         User user = await _userRepository.FindByIdAsync(userId) ?? throw new EntityNotFoundException("User not found");
 
         Guid projectId = Guid.NewGuid();
@@ -51,7 +58,7 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
         if (dto.Image != null)
         {
             string path = await _s3Service.UploadProjectPictureAsync(dto.Image, projectId);
-            newProject.Image = path; 
+            newProject.Image = path;
         }
 
         Project project = await _projectRepository.AddAsync(newProject);
@@ -59,7 +66,7 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
         Authorization authorization = new()
         {
             Project = project,
-            User  = user,
+            User = user,
             Role = Roles.Admin
         };
         await _authService.CreateAuthorizationAsync(authorization);
@@ -74,7 +81,7 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
 
         string userId = _authService.FindUserIdByClaims();
 
-        Authorization authorization = project.Authorizations.Where(a => a.UserId == userId && a.Role == Roles.Admin).FirstOrDefault() ?? throw new UnauthorizedAccessException("You are not authorized to update this project");;
+        Authorization authorization = project.Authorizations.Where(a => a.UserId == userId && a.Role == Roles.Admin).FirstOrDefault() ?? throw new UnauthorizedAccessException("You are not authorized to update this project"); ;
 
         project.Title = dto.Title;
         project.Description = dto.Description;
@@ -116,15 +123,32 @@ public class ProjectService(IProjectRepository projectRepository, IUserRepositor
         User user = await _authService.FindByUsername(username);
         bool isUserInProject = await _projectRepository.IsUserInProject(user.Id, projectId);
 
-        if(isUserInProject)
+        if (isUserInProject)
             throw new ClientIsAlreadyAddedException("User is already added.");
 
-        Authorization authorization = new() {
+        Authorization authorization = new()
+        {
             Project = project,
             User = user,
             Role = Roles.Client
         };
 
         await _authService.CreateAuthorizationAsync(authorization);
-    } 
+    }
+
+    public async Task<List<ProjectChatDTO>> FindChats()
+    {
+        string userId = _authService.FindUserIdByClaims();
+
+        List<ProjectChatDTO> projectsChatDto = await _projectRepository.FindChats(userId);
+
+        foreach (ProjectChatDTO pc in projectsChatDto)
+        {
+            pc.LastMessage = await _messageRepository.GetLastMessage(pc.ProjectId);
+            pc.UnreadMessages = await _messageRepository.GetUnreadMessagesQuantityAsync(pc.ProjectId, userId);
+        }
+
+        return projectsChatDto;
+    }
+
 }

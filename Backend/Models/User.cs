@@ -21,4 +21,7 @@ public class User : IdentityUser
 
     [JsonIgnore]
     public ICollection<Authorization> Authorizations { get; set; } = [];
+
+    [JsonIgnore]
+    public ICollection<UserPushToken> UserPushTokens { get; set; } = [];
 }
