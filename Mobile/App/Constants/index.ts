@@ -1,4 +1,6 @@
 export const AccessTokenKey = "accessToken";
+export const GoogleAccessTokenKey = "googleAccessToken";
+export const GoogleRefreshTokenKey = "googleRefreshToken";
 
 
 export enum ProjectsTabOptions {
@@ -31,4 +33,19 @@ export function stringToStatus(statusString: string): Status {
         return Status[formattedString as keyof typeof Status];
     }    
     return Status.Pending;
+}
+
+
+const diasDaSemanaEmInglesParaPortugues: Record<"MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY", string> = {
+  MONDAY: 'Segunda-feira',
+  TUESDAY: 'Terça-feira',
+  WEDNESDAY: 'Quarta-feira',
+  THURSDAY: 'Quinta-feira',
+  FRIDAY: 'Sexta-feira',
+  SATURDAY: 'Sábado',
+  SUNDAY: 'Domingo',
+};
+
+export function traduzirDiaDaSemana(diaEmIngles: string): string | undefined {
+  return diasDaSemanaEmInglesParaPortugues[diaEmIngles.toUpperCase() as keyof typeof diasDaSemanaEmInglesParaPortugues];
 }

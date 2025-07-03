@@ -8,15 +8,16 @@ interface Props extends TextInputProps{
         fill?: ColorValue;
         stroke?: ColorValue;
     }>,
+    iconRight?:boolean,
     placeholder?:string,
 
 }
 
-export default function TextInput({icon, placeholder, ...props} : Props) {
+export default function TextInput({icon, placeholder, iconRight, ...props} : Props) {
     return (
         <Input className="border-0 border-b-[1px] border-tertiary dark:border-tertiary-dark border-solid h-[40px] text-md" {...props}>
             {
-                icon &&
+                icon && !iconRight &&
                 <InputSlot className="pl-3">
                     <InputIcon as={icon}/>
                 </InputSlot>
@@ -26,6 +27,12 @@ export default function TextInput({icon, placeholder, ...props} : Props) {
                 placeholder={placeholder}
                 {...props}
             />
+            {
+                icon && iconRight &&
+                <InputSlot className="">
+                    <InputIcon as={icon}/>
+                </InputSlot>
+            }
         </Input>
     )
 }

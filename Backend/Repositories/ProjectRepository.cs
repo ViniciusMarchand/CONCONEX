@@ -1,5 +1,6 @@
 using Backend.DTO;
 using Backend.Enums;
+using Backend.Exceptions;
 using Backend.Infrastructure;
 using Backend.Models;
 using Backend.Repositories.Interfaces;
@@ -58,6 +59,38 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
     public async Task<Project?> FindByIdAsync(Guid id)
     {
         return await _context.Projects.Include(p => p.Authorizations).FirstOrDefaultAsync(p => p.Id == id);
+    }
+
+    public async Task<ProjectResponseDTO> FindProjectInfoAsync(Guid id, string currentUser)
+    {
+        ProjectResponseDTO project = await _context.Projects.Select(p => new ProjectResponseDTO()
+        {
+            Id = p.Id,
+            Title = p.Title,
+            Description = p.Description,
+            Status = p.Status.ToString(),
+            Deadline = p.Deadline,
+            AdminId = p.Authorizations.Where(a => a.Role == Roles.Admin).Select(a => a.UserId).FirstOrDefault(),
+
+            Image = p.Image,
+        }).FirstOrDefaultAsync(p => p.Id == id) ?? throw new EntityNotFoundException("Project not found.");
+
+
+        UserInfoDTO? otherUser = _context.Authorizations.Where(a => a.ProjectId == project.Id && a.UserId != currentUser ).Select(a => new UserInfoDTO
+        {
+            FirstName = a.User.FirstName,
+            LastName = a.User.LastName,
+            UserId = a.UserId
+        })
+           .FirstOrDefault();
+
+
+        if (otherUser != null)
+        {
+            project.UserInfo = otherUser;
+        }
+
+        return project;
     }
 
     public async Task<IEnumerable<Project>> FindAllAsync()
@@ -134,5 +167,13 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
             UnreadMessages = 0,
             LastMessage = null
         }).AsNoTracking().ToListAsync();
+    }
+
+    public async Task RemoveUserFromProjectAsync(Guid projectId, string userId)
+    {
+        var authorization = await _context.Authorizations
+            .FirstOrDefaultAsync(a => a.ProjectId == projectId && a.UserId == userId) ?? throw new EntityNotFoundException("Authorization not found.");
+        _context.Authorizations.Remove(authorization);
+        await _context.SaveChangesAsync();
     }
 }

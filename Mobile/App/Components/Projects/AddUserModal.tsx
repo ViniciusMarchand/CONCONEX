@@ -1,9 +1,8 @@
-import { Button, View } from "react-native"
+import { View } from "react-native"
 import { useState } from "react"
 import CustomText from "../Common/CustomText";
 import CustomButton from "../Common/CustomButton";
-import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "../Ui/modal";
-import { CloseIcon, Icon } from "../Ui/icon";
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalHeader } from "../Ui/modal";
 import TextInput from "../Common/InputText";
 import projectApi from "@/App/Api/ProjectApi";
 import { errorToast, successToast } from "@/App/Utils/Toasts";
@@ -13,10 +12,10 @@ interface Props {
   showModal: boolean,
   setShowModal: Function,
   projectId: string,
-
+  refresh: Function
 }
 
-export default function AddUserModal({ setShowModal, showModal, projectId }: Props) {
+export default function AddUserModal({ setShowModal, showModal, projectId, refresh }: Props) {
 
   const [username, setUsername] = useState("");
 
@@ -27,6 +26,7 @@ export default function AddUserModal({ setShowModal, showModal, projectId }: Pro
       }
       await projectApi.addUser({ projectId, username });
       successToast("Cliente adicionado com sucesso!");
+      await refresh();
       setShowModal(false);
     } catch (error: any) {
       if (error.response?.data) {
@@ -48,16 +48,6 @@ export default function AddUserModal({ setShowModal, showModal, projectId }: Pro
       <ModalBackdrop />
       <ModalContent className="bg-primary dark:bg-primary-dark">
         <ModalHeader>
-          {/* <Heading size="md" className="text-typography-950">
-              Invite your team
-            </Heading> */}
-          {/* <ModalCloseButton>
-              <Icon
-                as={CloseIcon}
-                size="md"
-                className="stroke-background-400 group-[:hover]/modal-close-button:stroke-background-700 group-[:active]/modal-close-button:stroke-background-900 group-[:focus-visible]/modal-close-button:stroke-background-900"
-              />
-            </ModalCloseButton> */}
         </ModalHeader>
         <ModalBody>
           <CustomText className="text-lg">
@@ -78,18 +68,6 @@ export default function AddUserModal({ setShowModal, showModal, projectId }: Pro
             Adicionar
           </CustomButton>
         </View>
-        {/* <ModalFooter className="w-full">
-            <CustomButton className="w-[200px]">
-              <CustomText className="text-red-500 dark:text-secondary-dark">aaa</CustomText>
-            </CustomButton>
-            <CustomButton
-              onPress={() => {
-                setShowModal(false)
-              }}
-            >
-              <CustomText>Explore</CustomText>
-            </CustomButton>
-          </ModalFooter> */}
       </ModalContent>
     </Modal>
   )

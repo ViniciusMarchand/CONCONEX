@@ -14,20 +14,25 @@ public class MessageService(
     IHttpContextService httpContextService,
     IAuthService authService,
     IHubContext<ChatHub> hubContext,
-    IPushNotificationService pushNotificationService
+    IPushNotificationService pushNotificationService,
+    S3Service s3Service
 
 ) : IMessageService
 {
     private readonly IMessageRepository _messageRepository = messageRepository;
-    private readonly IHttpContextService _httpContextService1 = httpContextService;
+    private readonly IHttpContextService _httpContextService = httpContextService;
     private readonly IAuthService _authService = authService;
     private readonly IHubContext<ChatHub> _hubContext = hubContext;
     private readonly IPushNotificationService _notificationService = pushNotificationService;
+    private readonly S3Service _s3Service = s3Service;
+
 
     public async Task<Message> CreateMessageAsync(MessageDTO dto)
     {
-        string userId = _httpContextService1.FindUserId();
+        string userId = _httpContextService.FindUserId();
         UserResponseDTO user = await _authService.UserInfo();
+
+        // await S3Service.SaveAttachmentsAsync(dto.Attachments);
 
         var message = new Message
         {
@@ -50,14 +55,13 @@ public class MessageService(
         await _messageRepository.CreateAsync(message);
 
 
-
         if (receiverId != null)
         {
             await _hubContext.Clients.Group(receiverId).SendAsync("ReceiveMessage", message);
             Console.WriteLine($"Message sent to user {userId}");
             await _notificationService.SendPushNotificationAsync(receiverId, $"{message.UserFirstName} {message.UserFirstName}", message.Content);
         }
-            
+
         return message;
     }
 

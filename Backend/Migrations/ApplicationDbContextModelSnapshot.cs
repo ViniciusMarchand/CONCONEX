@@ -56,6 +56,53 @@ namespace Backend.Migrations
                     b.ToTable("Authorizations");
                 });
 
+            modelBuilder.Entity("Backend.Models.AvailablePeriod", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CalendarConfigurationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CalendarConfigurationId");
+
+                    b.ToTable("AvailablePeriods");
+                });
+
+            modelBuilder.Entity("Backend.Models.CalendarConfiguration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("EmailGoogle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("CalendarConfigurations");
+                });
+
             modelBuilder.Entity("Backend.Models.Image", b =>
                 {
                     b.Property<Guid>("Id")
@@ -167,6 +214,28 @@ namespace Backend.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("ProjectsStages");
+                });
+
+            modelBuilder.Entity("Backend.Models.ScheduleException", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CalendarConfigurationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CalendarConfigurationId");
+
+                    b.ToTable("ScheduleExceptions");
                 });
 
             modelBuilder.Entity("Backend.Models.UserPushToken", b =>
@@ -461,6 +530,28 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Backend.Models.AvailablePeriod", b =>
+                {
+                    b.HasOne("Backend.Models.CalendarConfiguration", "CalendarConfiguration")
+                        .WithMany("Periods")
+                        .HasForeignKey("CalendarConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CalendarConfiguration");
+                });
+
+            modelBuilder.Entity("Backend.Models.CalendarConfiguration", b =>
+                {
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithOne("CalendarConfiguration")
+                        .HasForeignKey("Backend.Models.CalendarConfiguration", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Backend.Models.Image", b =>
                 {
                     b.HasOne("Backend.Models.ProjectStage", "ProjectStage")
@@ -481,6 +572,17 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Backend.Models.ScheduleException", b =>
+                {
+                    b.HasOne("Backend.Models.CalendarConfiguration", "CalendarConfiguration")
+                        .WithMany("Exceptions")
+                        .HasForeignKey("CalendarConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CalendarConfiguration");
                 });
 
             modelBuilder.Entity("Backend.Models.UserPushToken", b =>
@@ -545,6 +647,13 @@ namespace Backend.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Backend.Models.CalendarConfiguration", b =>
+                {
+                    b.Navigation("Exceptions");
+
+                    b.Navigation("Periods");
+                });
+
             modelBuilder.Entity("Backend.Models.Project", b =>
                 {
                     b.Navigation("Authorizations");
@@ -560,6 +669,8 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.User", b =>
                 {
                     b.Navigation("Authorizations");
+
+                    b.Navigation("CalendarConfiguration");
 
                     b.Navigation("UserPushTokens");
                 });

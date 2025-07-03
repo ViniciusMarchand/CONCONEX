@@ -1,3 +1,4 @@
+import Calendar from "../Screens/Auth/Calendar";
 import Chats from "../Screens/Auth/Chats";
 import Profile from "../Screens/Auth/Profile";
 import Projects from "../Screens/Auth/Projects";
@@ -16,12 +17,13 @@ export const AuthScreens = {
     ProjectFormScreen:"ProjectForm",
     ProjectStageFormScreen:"ProjectStageForm",
     ChatScreen:"Chat",
+    CalendarConfigsScreen:"CalendarConfig",
 } as const;
 
 export const MainTabsList = [
     {
         name: 'Agenda',
-        component: Projects,
+        component: Calendar,
         icon: 'calendar'
     },
         {

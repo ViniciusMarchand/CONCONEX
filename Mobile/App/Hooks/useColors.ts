@@ -12,6 +12,7 @@ export default function useColors() {
     const { colors } = fullConfig.theme;;
 
     const fontColor = colors["font-color"][themeColor]
+    const primary = colors.primary[themeColor];
 
-    return {fontColor}
+    return {fontColor, primary}
 }

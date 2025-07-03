@@ -151,4 +151,28 @@ public class ProjectService(
         return projectsChatDto;
     }
 
+    public async Task RemoveUserFromProjectAsync(Guid projectId, string userId)
+    {
+        string currentUserId = _authService.FindUserIdByClaims();
+        Project project = await _projectRepository.FindByIdAsync(projectId) ?? throw new EntityNotFoundException("Project not found");
+
+        Authorization authorization = project.Authorizations
+            .FirstOrDefault(a => a.UserId == currentUserId && a.Role == Roles.Admin && a.ProjectId == projectId)
+            ?? throw new UnauthorizedAccessException("You are not authorized to remove users from this project");
+
+        await _projectRepository.RemoveUserFromProjectAsync(projectId, userId);
+    }
+    
+    public async Task<ProjectResponseDTO> FindProjectInfoAsync(Guid id)
+    {
+        string userId = _authService.FindUserIdByClaims();
+        bool isUserInProject = await _projectRepository.IsUserInProject(userId, id);
+
+        if (!isUserInProject)
+        {
+            throw new UnauthorizedAccessException("You are not authorized to view this project");
+        }
+
+        return await _projectRepository.FindProjectInfoAsync(id, userId);
+    }
 }

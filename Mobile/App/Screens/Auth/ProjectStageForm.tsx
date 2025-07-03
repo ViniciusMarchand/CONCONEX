@@ -1,5 +1,4 @@
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
-import Layout from "../NoAuth/Layout";
 import { Formik } from "formik";
 import Title from "@/App/Components/Common/Title";
 import CustomButton from "@/App/Components/Common/CustomButton";
@@ -20,6 +19,7 @@ import { Textarea, TextareaInput } from "@/App/Components/Ui/textarea";
 import TextInput from "@/App/Components/Common/InputText";
 import { File } from "lucide-react-native";
 import projectStagesApi from "@/App/Api/ProjectStagesApi";
+import Layout from "@/App/Components/Common/Layout";
 
 
 type ProjectStageFormRouteProp = RouteProp<

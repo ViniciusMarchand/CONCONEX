@@ -67,7 +67,26 @@ const projectApi = {
         .catch(error => {
             throw error;
         })
-    }
+    },
+
+    removeUserFromProject: async (projectId: string, userId: string) => {
+        const URL = controllerBase + "/remove-user/" + projectId + "/" + userId;
+        return await Axios.delete(URL)
+        .then((res) => res)
+        .catch(error => {
+            throw error;
+        })
+    },
+
+    findInfo: async (projectId: string) => {
+        const URL = controllerBase + "/info/" + projectId;
+        return await Axios.get(URL)
+        .then((res) => res)
+        .catch(error => {
+            throw error;
+        })
+    },
+    
 }
 
 

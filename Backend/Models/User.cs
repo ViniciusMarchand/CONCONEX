@@ -14,14 +14,19 @@ public class User : IdentityUser
     public string Password { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public Roles Roles { get; set; } = Roles.Client;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime ModifiedAt { get; set; } = DateTime.UtcNow;
     public bool IsDeleted { get; set; }
+
+    [JsonIgnore]
+    [InverseProperty(nameof(CalendarConfiguration.User))]
+    public  CalendarConfiguration? CalendarConfiguration { get; set; } = new();
 
     [JsonIgnore]
     public ICollection<Authorization> Authorizations { get; set; } = [];
 
     [JsonIgnore]
     public ICollection<UserPushToken> UserPushTokens { get; set; } = [];
+
+
 }

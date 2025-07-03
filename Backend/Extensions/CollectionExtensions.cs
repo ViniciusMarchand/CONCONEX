@@ -27,6 +27,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserPushTokenRepository, UserPushTokenRepository>();
         services.AddScoped<IUserPushTokenService, UserPushTokenService>();
         services.AddScoped<IPushNotificationService, PushNotificationService>();
+        services.AddScoped<ICalendarConfigurationRepository, CalendarConfigurationRepository>();
+        services.AddScoped<ICalendarConfigurationService, CalendarConfigurationService>();
         services.AddHttpClient();
 
         

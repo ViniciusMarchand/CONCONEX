@@ -17,6 +17,8 @@ import { LoginFormValues } from '@/App/Types';
 import authApi from '@/App/Api/AuthApi';
 import { errorToast } from '@/App/Utils/Toasts';
 import { useAuth } from '@/App/Contexts/AuthContext';
+import { apiUrl } from '@/App/Constants/Env';
+import { useEffect } from 'react';
 
 export default function Login() {
   const navigationNoAuth = useNavigation<StackNavigationProp<NoAuthStackParamList>>();
@@ -42,6 +44,9 @@ export default function Login() {
     }
     
   }
+  useEffect(() => {
+    alert(apiUrl)
+  }, []);
 
   return (
     <Formik
@@ -55,7 +60,7 @@ export default function Login() {
               <Logo />
             </View>
             <View className='gap-2 my-4'>
-              <Title className='text-center'>Bem vindo!</Title>
+              <Title className='text-center'>Bem-vindo!</Title>
               <CustomText className='text-center'>Identifique-se para acessar seus projetos</CustomText>
             </View>
           </View>

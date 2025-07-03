@@ -1,5 +1,4 @@
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
-import Layout from "../NoAuth/Layout";
 import { Formik } from "formik";
 import Title from "@/App/Components/Common/Title";
 import Inputs from "@/App/Components/Common/Inputs";
@@ -24,6 +23,7 @@ import { File } from "lucide-react-native";
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from "expo-image";
 import NoImage from "../../../Assets/img/no-image.png"
+import Layout from "@/App/Components/Common/Layout";
 
 
 type ProjectFormRouteProp = RouteProp<

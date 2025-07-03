@@ -9,4 +9,6 @@ public interface IProjectService : ICrudService<Project, ProjectDTO>
     Task<IEnumerable<ProjectResponseDTO>> FindByUserIdAsync();
     Task AddUserToProject(Guid projectId, string username);
     Task<List<ProjectChatDTO>> FindChats();
+    Task RemoveUserFromProjectAsync(Guid projectId, string userId);
+    Task<ProjectResponseDTO> FindProjectInfoAsync(Guid id);
 }

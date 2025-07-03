@@ -1,11 +1,27 @@
 {
   "expo": {
+    "scheme": "conconex",
     "name": "conconex",
     "slug": "conconex",
     "version": "1.0.0",
     "main": "./App/App.tsx",
+    "intentFilters": [
+      {
+        "action": "VIEW",
+        "data": [
+          {
+            "scheme": "conconex",
+            "host": "oauthredirect"
+          }
+        ],
+        "category": [
+          "BROWSABLE",
+          "DEFAULT"
+        ]
+      }
+    ],
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./Assets/favicon.png"
     },
     "experiments": {
       "tsconfigPaths": true
@@ -13,11 +29,7 @@
     "plugins": [
       [
         "expo-font",
-        {
-          "fonts": [
-            "node_modules/@expo-google-fonts/inter/Roboto_400Regular.ttf"
-          ]
-        }
+        "@react-native-google-signin/google-signin"
       ],
       "expo-secure-store"
     ],
@@ -37,7 +49,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./Assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.conconex"

@@ -14,6 +14,4 @@ const userPushTokenApi = {
     },
 }
 
-
 export default userPushTokenApi;
-

@@ -2,7 +2,8 @@ import MyServices from "@/App/Components/Projects/MyServices";
 import { ProjectsTabOptions } from "@/App/Constants";
 import { useState } from "react"
 import { View } from "react-native";
-import Layout from "../NoAuth/Layout";
+import Layout from "@/App/Components/Common/Layout"
+;
 import CardLayout from "@/App/Components/Common/CardLayout";
 import TabButton from "@/App/Components/Projects/TabButton";
 import HiredProjects from "@/App/Components/Projects/HiredProjects";

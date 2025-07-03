@@ -1,7 +1,6 @@
 import { AuthStackParamList } from "@/App/Types/NavigatorTypes";
 import { RouteProp, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { FlatList, Pressable, TouchableOpacity, View } from "react-native";
-import Layout from "../NoAuth/Layout";
 import CustomText from "@/App/Components/Common/CustomText";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import useColors from "@/App/Hooks/useColors";
@@ -21,6 +20,11 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { AuthScreens } from "@/App/Constants/Screens";
 import CircularPlusButton from "@/App/Components/Common/CircularPlusButton";
 import { ProjectStage } from "@/App/Types";
+import ScheduleMeeting from "@/App/Components/Projects/ScheduleEvent";
+import projectApi from "@/App/Api/ProjectApi";
+import { errorToast, successToast } from "@/App/Utils/Toasts";
+import Layout from "@/App/Components/Common/Layout";
+
 
 type ProjectDetailsRouteProp = RouteProp<
   AuthStackParamList,
@@ -35,8 +39,9 @@ export default function ProjectDetails({ route }: Props) {
 
   const { fontColor } = useColors();
   const { goBack, navigate } = useNavigation<StackNavigationProp<AuthStackParamList>>();
+  const [project, setProject] = useState(route.params);
 
-  const { userInfo, deadline, description, id, status, title, adminId } = route.params;
+  const { userInfo, deadline, description, id, status, title, adminId } = project;
 
   const [data, setData] = useState<ProjectStage[]>([]);
   const { user } = useAuth();
@@ -52,6 +57,8 @@ export default function ProjectDetails({ route }: Props) {
     findProjectStages();
   }, [findProjectStages]);
 
+
+
   useFocusEffect(
     useCallback(() => {
       findProjectStages();
@@ -64,15 +71,42 @@ export default function ProjectDetails({ route }: Props) {
       setIsAuth(true);
     }
   }, []);
+  
+  const updateProjectInfo = async () => {
+    try {
+      console.warn("AAAAAAAAAAAAA")
+      const res = await projectApi.findInfo(id);
+      console.warn("FOI: ", res.data)
+      
+      setProject(res.data);
+      
+    } catch (error) {
+      errorToast("Erro ao atualizar informações do projeto");
+    }
+  }
+
+  const removeUserFromProject = async (userId: string) => {
+    try {
+      console.warn("PASSOU AQUI")
+      await projectApi.removeUserFromProject(id, userId);
+      console.warn("PASSOU AQUI2")
+      await updateProjectInfo();
+      successToast("Usuário removido com sucesso!");
+    } catch (error) {
+      errorToast("Erro ao remover usuário do projeto");
+    }
+  }
+
 
   return (
-    <Layout className="w-full h-fuil px-6">
+    <Layout className="w-full h-fuil px-6 my-5">
       <View className="flex-1 pt-10 w-full gap-3">
         <View className="flex-row justify-between">
           <Pressable onPress={() => goBack()}>
             <AntDesign name="arrowleft" size={24} color={fontColor} />
           </Pressable>
           <View className="flex-row gap-2">
+            <ScheduleMeeting project={route.params} userId={userInfo.userId}/>
             {
               isAuth && <>
                 <TouchableOpacity onPress={() => navigate(AuthScreens.ProjectFormScreen, route.params)}>
@@ -100,6 +134,11 @@ export default function ProjectDetails({ route }: Props) {
                         numberOfLines={1}
                         ellipsizeMode="tail"
                       >{`${userInfo.firstName} ${userInfo.lastName}`}</CustomText>
+                      <TouchableOpacity
+                        onPress={async () => await removeUserFromProject(userInfo.userId)}>
+                        <AntDesign name="deleteuser" size={24} color={fontColor} 
+                        className="ml-2 bg-red-600 dark:bg-red-600 p-1 rounded-[10px] border-tertiary dark:border-tertiary-dark"/>
+                      </TouchableOpacity>
                     </>
                       : <CustomText className="text-sm">Sem usuários cadastrados no projeto</CustomText>
                   }
@@ -128,7 +167,10 @@ export default function ProjectDetails({ route }: Props) {
       {
         isAuth &&
         <>
-          <CircularAddUserButton onPress={() => setShowModal(true)} />
+        {
+          !userInfo?.userId &&
+            <CircularAddUserButton onPress={() => setShowModal(true)} />
+        }
           <CircularPlusButton onPress={() => navigate(AuthScreens.ProjectStageFormScreen, {
                       id: '',
                       title: '',
@@ -141,7 +183,7 @@ export default function ProjectDetails({ route }: Props) {
         </>
 
       }
-      <AddUserModal showModal={showModal} setShowModal={setShowModal} projectId={id} />
+      <AddUserModal showModal={showModal} setShowModal={setShowModal} projectId={id} refresh={updateProjectInfo} />
     </Layout>
 
   )

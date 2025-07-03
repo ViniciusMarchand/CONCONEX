@@ -105,13 +105,13 @@ public class ProjectController(IProjectService projectService, S3Service s3Servi
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpPost("imagem")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> UploadImage([FromForm] ProjectDTO dto)
     {
         var file = dto.Image;
-            try
+        try
         {
             var url = await _s3Service.UploadFileAsync(file!);
             return Ok(new { url });
@@ -124,6 +124,35 @@ public class ProjectController(IProjectService projectService, S3Service s3Servi
         {
             return StatusCode(500, $"Erro S3: {ex.Message}");
         }
+    }
+
+    [HttpDelete("remove-user/{projectId}/{userId}")]
+    public async Task<ActionResult> RemoveUserFromProjectAsync(Guid projectId, string userId)
+    {
+        try
+        {
+            await _projectService.RemoveUserFromProjectAsync(projectId, userId);
+            return Ok("User removed from project.");
+        }
+        catch (EntityNotFoundException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("info/{id}")]
+    public async Task<ActionResult<ProjectResponseDTO>> FindProjectInfoAsync(Guid id)
+    {
+        ProjectResponseDTO project = await _projectService.FindProjectInfoAsync(id);
+        return Ok(project);
     }
    
 }

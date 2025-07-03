@@ -36,8 +36,8 @@ const CarouselStage = ({ images, autoPlay = false, loop = false, className, inde
 
     const baseOptions = {
         vertical: false,
-        width: viewWidth || 200,
-        height: viewWidth ? viewWidth * 0.644 : 160, 
+        width: 330,
+        height: 196, 
          
     };
 

@@ -38,7 +38,7 @@ public class AuthController
         {
             return NotFound(e.Message);
         }
-        catch(UnauthorizedAccessException e)
+        catch (UnauthorizedAccessException e)
         {
             return Unauthorized(e.Message);
         }
@@ -130,6 +130,5 @@ public class AuthController
     {
         return await _authService.UserInfo();
     }
-
 }
 

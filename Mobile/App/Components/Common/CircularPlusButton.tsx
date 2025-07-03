@@ -7,7 +7,7 @@ export default function CircularPlusButton({...props} : TouchableOpacityProps) {
     const  { fontColor } = useColors();
     
     return ( 
-        <TouchableOpacity className="flex justify-center items-center bg-green-600 dark:bg-green-500 rounded-[100%] p-1 w-[50px] h-[50px] absolute z-10 bottom-4 right-4" {...props}>
+        <TouchableOpacity className="flex justify-center items-center bg-green-600 dark:bg-green-500 rounded-[100px] p-1 w-[50px] h-[50px] absolute z-10 bottom-4 right-4" {...props}>
                 <AntDesign name="plus" size={40} color={fontColor} />
         </TouchableOpacity>
     )

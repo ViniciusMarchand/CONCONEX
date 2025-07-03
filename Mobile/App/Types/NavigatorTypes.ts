@@ -13,6 +13,7 @@ export type AuthStackParamList = {
     ProjectForm: undefined | ProjectResponseDTO;
     ProjectStageForm: undefined | ProjectStage;
     Chat: ChatType;
+    CalendarConfig: undefined;
 };
 
 export type AsyncState<T> = {

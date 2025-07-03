@@ -1,10 +1,10 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Layout from "App/Screens/NoAuth/Layout";
 import Login from "App/Screens/NoAuth/Login";
 import { NoAuthScreens } from "../Constants/Screens";
 import SignUp from "../Screens/NoAuth/SignUp";
 import { NoAuthStackParamList } from "../Types/NavigatorTypes";
 import EmailVerification from "../Screens/NoAuth/EmailVerification";
+import Layout from "../Components/Common/Layout";
 
 
 export default function NoAuthNavigator() {

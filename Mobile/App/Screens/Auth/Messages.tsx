@@ -15,6 +15,7 @@ import { errorToast } from "@/App/Utils/Toasts";
 import { apiUrl } from "@/App/Constants/Env";
 import { useAuth } from "@/App/Contexts/AuthContext";
 import { useSignalR } from "@/App/Contexts/SignalRContext";
+import { Clipboard, Paperclip } from "lucide-react-native";
 
 type ChatRouteProp = RouteProp<
   AuthStackParamList,
@@ -152,7 +153,10 @@ export default function Messages({route} : Props) {
           value={newMessage}
           onChangeText={setNewMessage}
           onSubmitEditing={handleSend}
-        />
+          icon={Paperclip  }
+          iconRight={true}
+        
+          />
         <TouchableOpacity
           className="bg-blue-500 flex-row rounded-full w-12 h-12 items-center justify-center text-center"
           onPress={handleSend}
