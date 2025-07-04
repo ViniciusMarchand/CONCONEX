@@ -97,5 +97,8 @@
     "root": true
   },
   "main": "./App/App.tsx",
-  "private": true
+  "private": true,
+  "overrides": {
+    "react-native-reanimated": "3.16.1"
+  }
 }

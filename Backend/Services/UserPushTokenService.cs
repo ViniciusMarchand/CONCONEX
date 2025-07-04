@@ -9,10 +9,13 @@ public class UserPushTokenService(IUserPushTokenRepository repository, IAuthRepo
     private readonly IUserPushTokenRepository _repository = repository;
     private readonly IAuthRepository _authRepository = authRepository;
 
-    public async Task AddTokenAsync(string userId, string token, string deviceInfo)
+    public async Task AddTokenAsync(string userId, string token)
     {
         var existingToken = await _repository.GetTokenByTokenAndUserIdAsync(token, userId);
         User user = await _authRepository.FindByIdAsync(userId);
+        Console.WriteLine("PASSOU AQUI2321");
+
+
         if (existingToken == null)
         {
             var userPushToken = new UserPushToken
@@ -20,8 +23,8 @@ public class UserPushTokenService(IUserPushTokenRepository repository, IAuthRepo
                 UserId = userId,
                 User = user,
                 Token = token,
-                DeviceInfo = deviceInfo
             };
+            Console.WriteLine("PASSOU AQUI");
             await _repository.AddTokenAsync(userPushToken);
         }
     }

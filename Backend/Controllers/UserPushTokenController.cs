@@ -21,7 +21,7 @@ public class UserPushTokenController(IUserPushTokenService tokenService) : Contr
     [HttpPost]
     public async Task<IActionResult> RegisterToken([FromBody] RegisterTokenRequestDTO request)
     {
-        await _tokenService.AddTokenAsync(request.UserId, request.Token, request.DeviceInfo);
+        await _tokenService.AddTokenAsync(request.UserId, request.Token);
         return Ok();
     }
 

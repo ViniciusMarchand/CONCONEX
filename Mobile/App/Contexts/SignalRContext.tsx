@@ -24,61 +24,77 @@ export const SignalRProvider = ({ userId, children }: SignalRProviderProps) => {
   const { user } = useAuth();
 
   const connect = useCallback(async () => {
+    if (connection && connection.state === HubConnectionState.Connected) {
+      console.log("SignalR: Já conectado.");
+      return;
+    }
+
     const newConnection = new HubConnectionBuilder()
       .withUrl(`${apiUrl}/chathub`)
-      .withAutomaticReconnect()
+      .withAutomaticReconnect({
+        nextRetryDelayInMilliseconds: retryContext => {
+          const maxDelay = 60000;
+          const delay = Math.min(retryContext.elapsedMilliseconds * 2, maxDelay);
+          console.warn(`SignalR: Tentando reconectar em ${delay / 1000} segundos... (Tentativa ${retryContext.retryReason})`);
+          return delay;
+        }
+      })
       .build();
 
     newConnection.on("ReceiveMessage", (message: Message) => {
       setMessage({ ...message, content: message.content });
     });
 
-    newConnection.onclose(async (error) => {
-      console.warn("SignalR connection closed. Attempting reconnect...");
-      await tryReconnect();
+    newConnection.onreconnecting((error) => {
+      console.warn("SignalR: Reconectando...");
     });
 
-    newConnection.onreconnecting((error) => {
-      console.warn("SignalR reconnecting...");
+    newConnection.onreconnected(async (connectionId) => {
+      console.log("SignalR: Reconectado com sucesso. ID da Conexão:", connectionId);
+      if (userId) {
+        try {
+          await newConnection.invoke("RegisterUser", userId);
+          console.log("SignalR: Usuário re-registrado.");
+        } catch (error) {
+          console.error("SignalR: Falha ao re-registrar o usuário após reconexão.", error);
+        }
+      }
+    });
+
+    newConnection.onclose((error) => {
+      console.warn("SignalR: Conexão fechada. AutomaticReconnect tentará reconectar.", error);
     });
 
     try {
       await newConnection.start();
+      console.log("SignalR: Conectado.");
       await newConnection.invoke("RegisterUser", userId);
       setConnection(newConnection);
-      console.log("SignalR connected.");
     } catch (error) {
-      console.error("SignalR connection failed.", error);
-      setTimeout(connect, 5000); // Retry after 5 seconds
+      console.error("SignalR: Falha na conexão inicial. Tentando novamente...", error);
+      setTimeout(connect, 2000);
     }
-  }, [userId]);
-
-  const tryReconnect = useCallback(async () => {
-    if (connection && connection.state !== HubConnectionState.Connected) {
-      try {
-        await connection.start();
-        await connection.invoke("RegisterUser", userId);
-        console.log("Reconnected to SignalR.");
-      } catch (error) {
-        console.warn("Reconnect attempt failed. Retrying in 5 seconds...");
-        setTimeout(tryReconnect, 5000);
-      }
-    }
-  }, [connection, userId]);
+  }, [userId, connection]);
 
   useEffect(() => {
     connect();
     return () => {
-      if (connection) connection.stop();
+      if (connection && connection.state !== HubConnectionState.Disconnected) {
+        console.log("SignalR: Parando conexão ao desmontar.");
+        connection.stop();
+      }
     };
-  }, [connect]);
+  }, [connect, connection]);
 
   const sendMessage = useCallback(async (chatId: string, content: string) => {
-    if (!connection) return;
+    if (!connection || connection.state !== HubConnectionState.Connected) {
+      console.warn("Não é possível enviar a mensagem: A conexão SignalR não está estabelecida ou conectada.");
+      return;
+    }
     try {
       await connection.invoke("SendMessage", chatId, content, userId);
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao enviar mensagem:", error);
     }
   }, [connection, userId]);
 
