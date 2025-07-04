@@ -27,10 +27,13 @@ export const usePushToken = (userId: string) => {
 
       try {        
         const token = (await Notifications.getExpoPushTokenAsync()).data;
-        await userPushTokenApi.save({ userId: userId, token: token, deviceInfo: await getDeviceInfo() });
+        await userPushTokenApi.save({ userId: userId, token: token});
 
       } catch (error:any) {
-
+        console.error('Erro ao obter o token de notificação:', error.message || error);
+                alert('Erro ao obter o token de notificação. Por favor, tente novamente mais tarde.');
+        alert('Erro: ' + (error.message || error));
+        return;
       }
     };
 
