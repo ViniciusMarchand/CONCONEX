@@ -45,9 +45,9 @@ export default function GoogleAuthProvider({ children }: Props) {
   const [token, setToken] = useState<string|null>("");
   
   useEffect(() => {
-    ClearGoogleAccessToken();
+    // ClearGoogleAccessToken();
     setToken(null);
-    // setToken(getGoogleAccessToken());
+    setToken(getGoogleAccessToken());
   },[]);
 
   const getUserInfo = async () => {
@@ -95,7 +95,7 @@ export default function GoogleAuthProvider({ children }: Props) {
     };
   
     GoogleSignin.configure({
-      webClientId: googleCalendarClientId,
+      webClientId: "531901674924-cu2ceuah3vp2givrtumr7qdmk7h7lam7.apps.googleusercontent.com",
       scopes: ["https://www.googleapis.com/auth/calendar.events", "profile", "email"],
       offlineAccess: true,
       

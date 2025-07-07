@@ -1,9 +1,10 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from '@expo/vector-icons';
-import { AuthScreens, MainTabsList } from "../Constants/Screens";
+import { AuthScreens } from "../Constants/Screens";
 import resolveConfig from 'tailwindcss/resolveConfig'
 import tailwindConfig from '../../tailwind.config';
 import { useColorScheme } from "nativewind";
+import { MainTabsList } from "../Constants/MainTabList";
 
 const Tab = createBottomTabNavigator();
 

@@ -10,6 +10,8 @@ npm-debug.*
 *.orig.*
 web-build/
 
+google-services.json
+conconex-80d68-firebase-adminsdk-fbsvc-70f1ec0b49.json
 
 .env
 
@@ -24,6 +26,6 @@ android
 
 .expo-env.d.ts
 
-android
+
 
 ios

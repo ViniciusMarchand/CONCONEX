@@ -74,9 +74,7 @@ export default function ProjectDetails({ route }: Props) {
   
   const updateProjectInfo = async () => {
     try {
-      console.warn("AAAAAAAAAAAAA")
       const res = await projectApi.findInfo(id);
-      console.warn("FOI: ", res.data)
       
       setProject(res.data);
       
@@ -87,9 +85,7 @@ export default function ProjectDetails({ route }: Props) {
 
   const removeUserFromProject = async (userId: string) => {
     try {
-      console.warn("PASSOU AQUI")
       await projectApi.removeUserFromProject(id, userId);
-      console.warn("PASSOU AQUI2")
       await updateProjectInfo();
       successToast("Usuário removido com sucesso!");
     } catch (error) {

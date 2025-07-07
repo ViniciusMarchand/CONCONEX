@@ -32,23 +32,31 @@ public class MessageService(
         string userId = _httpContextService.FindUserId();
         UserResponseDTO user = await _authService.UserInfo();
 
-        // await S3Service.SaveAttachmentsAsync(dto.Attachments);
+        string url  = await _s3Service.SaveAttachmentsAsync(dto);
 
         var message = new Message
         {
             Id = ObjectId.GenerateNewId(),
             ProjectId = dto.ProjectId,
             UserId = Guid.Parse(userId),
-            Content = dto.Content,
+            Content = dto.Content!,
             UserFirstName = user.FirstName,
             UserLastName = user.LastName,
-            Attachments = dto.Attachments?.Select(a => new Attachment
-            {
-                Url = a.Url,
-                Type = a.Type
-            }).ToList(),
             SentAt = DateTime.UtcNow
         };
+
+
+        if (dto.Attachment != null)
+        {
+            message.Attachments = new List<Attachment>
+                {
+                    new ()
+                    {
+                        Url = url,
+                        Type = dto.Attachment.ContentType
+                    }
+                };
+        }
 
         string? receiverId = await _authService.FindAnotherUserIdFromProject(dto.ProjectId, userId);
 

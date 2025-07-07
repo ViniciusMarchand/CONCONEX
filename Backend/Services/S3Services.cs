@@ -1,5 +1,6 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using Backend.DTO;
 using Backend.Exceptions;
 using Microsoft.Extensions.Configuration;
 namespace Backend.Services;
@@ -143,4 +144,33 @@ public class S3Service
         }
 
     }
+
+     public async Task<string> SaveAttachmentsAsync(MessageDTO dto)
+    {
+        var file = dto.Attachment;
+
+        if (file == null)
+        {
+            return "";
+        }
+
+
+        var fileName = $"{dto.ProjectId}/chat/{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+
+        using (var stream = file.OpenReadStream())
+        {
+            await _s3Client.PutObjectAsync(new PutObjectRequest
+            {
+                BucketName = _bucketName,
+                Key = fileName,
+                InputStream = stream,
+                ContentType = file.ContentType,
+                CannedACL = S3CannedACL.PublicRead,
+            });
+        }
+
+        return $"https://{_bucketName}.s3.amazonaws.com/{fileName}";
+    }
+
+
 }

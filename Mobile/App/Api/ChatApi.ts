@@ -23,9 +23,13 @@ const chatApi = {
         })
     },
 
-    sendMessage: async (message : MessageDTO) => {
+    sendMessage: async (message : FormData | MessageDTO) => {
         const URL = controllerBase;
-        return await Axios.post(URL, message)
+        return await Axios.post(URL, message, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        })
         .then((res) => res)
         .catch(error => {
             throw error;

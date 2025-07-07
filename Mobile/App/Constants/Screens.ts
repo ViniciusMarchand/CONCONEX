@@ -20,25 +20,3 @@ export const AuthScreens = {
     CalendarConfigsScreen:"CalendarConfig",
 } as const;
 
-export const MainTabsList = [
-    {
-        name: 'Agenda',
-        component: Calendar,
-        icon: 'calendar'
-    },
-        {
-        name: 'Mensagens',
-        component: Chats,
-        icon: 'chatbubbles'
-    },
-        {
-        name: 'Projetos',
-        component: Projects,
-        icon: 'documents'
-    },
-        {
-        name: 'Perfil',
-        component: Profile,
-        icon: 'person-circle'
-    },
-] as const;

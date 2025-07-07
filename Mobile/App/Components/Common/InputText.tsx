@@ -1,7 +1,8 @@
 import { IIconComponentType } from "@gluestack-ui/icon/lib/createIcon";
 import { Input, InputField, InputIcon, InputSlot } from "../Ui/input";
-import { ColorValue, TextInputProps } from "react-native";
+import { ColorValue, TextInputProps, Touchable, TouchableOpacity } from "react-native";
 import { SvgProps } from "react-native-svg";
+import { createElement } from "react";
 
 interface Props extends TextInputProps{
     icon?: IIconComponentType<SvgProps | any |{
@@ -10,10 +11,11 @@ interface Props extends TextInputProps{
     }>,
     iconRight?:boolean,
     placeholder?:string,
+    popOverElement?: any
 
 }
 
-export default function TextInput({icon, placeholder, iconRight, ...props} : Props) {
+export default function TextInput({icon, placeholder, iconRight, popOverElement, ...props} : Props) {
     return (
         <Input className="border-0 border-b-[1px] border-tertiary dark:border-tertiary-dark border-solid h-[40px] text-md" {...props}>
             {
@@ -28,11 +30,18 @@ export default function TextInput({icon, placeholder, iconRight, ...props} : Pro
                 {...props}
             />
             {
-                icon && iconRight &&
+                icon && iconRight && !popOverElement ?
                 <InputSlot className="">
                     <InputIcon as={icon}/>
                 </InputSlot>
+                :
+                <InputSlot className="pr-3">
+                    {
+                        popOverElement
+                    }
+                </InputSlot>
             }
+
         </Input>
     )
 }

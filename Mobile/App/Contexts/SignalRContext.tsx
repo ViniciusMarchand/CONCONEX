@@ -14,7 +14,7 @@ interface SignalRContextData {
 const SignalRContext = createContext<SignalRContextData | undefined>(undefined);
 
 interface SignalRProviderProps {
-  userId: string;
+  userId?: string;
   children: ReactNode;
 }
 

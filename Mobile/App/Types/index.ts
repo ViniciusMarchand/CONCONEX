@@ -136,14 +136,14 @@ export type Message = {
     read:boolean;
     userFirstName:string;
     userLastName:string;
-    attachment:Attachment;
+    attachments:Attachment[];
 }
 
 export type MessageDTO = {
     projectId:string;
     content:string;
     // read:boolean;
-    // attachment:Attachment;
+    attachment?:Attachment;
 }
 
 export type Chat = {
