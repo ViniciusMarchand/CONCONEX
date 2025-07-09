@@ -145,8 +145,6 @@ builder.Services.AddSignalR();
 
 builder.Services.AddApplicationServices();
 
-builder.WebHost.UseUrls("http://localhost:5188", "http://192.168.3.8:5188");
-
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(x =>
     x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
