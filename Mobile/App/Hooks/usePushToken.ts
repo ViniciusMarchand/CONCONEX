@@ -26,7 +26,9 @@ export const usePushToken = (userId: string) => {
       }
 
       try {        
-        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        const token = (await Notifications.getExpoPushTokenAsync({
+          projectId: '5bec6ab9-00ad-40b4-811b-b2b42b8bb400'
+        })).data;
         await userPushTokenApi.save({ userId: userId, token: token});
 
       } catch (error:any) {

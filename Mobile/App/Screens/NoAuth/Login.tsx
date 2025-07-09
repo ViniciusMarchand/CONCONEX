@@ -44,9 +44,6 @@ export default function Login() {
     }
     
   }
-  useEffect(() => {
-    alert(apiUrl)
-  }, []);
 
   return (
     <Formik

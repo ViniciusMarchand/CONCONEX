@@ -19,10 +19,22 @@ public class MessageController(
     private readonly IProjectService _projectService = projectService;
 
     [HttpPost]
-    public async Task<ActionResult<Message>> CreateMessage([FromBody] MessageDTO dto)
+    public async Task<ActionResult<Message>> CreateMessage([FromForm] MessageDTO dto)
     {
-        var message = await _messageService.CreateMessageAsync(dto);
-        return CreatedAtAction(nameof(GetMessageById), new { id = message.Id.ToString() }, message);
+
+    if (dto.Attachment != null)
+    {
+        if (dto.Attachment.Length > 50 * 1024 * 1024)
+        {
+            return BadRequest("O arquivo n�o pode passar de 50MB.");
+        }
+
+    }
+
+    var message = await _messageService.CreateMessageAsync(dto);
+    return CreatedAtAction(nameof(GetMessageById), new { id = message.Id }, message);
+
+        
     }
 
     [HttpGet("chat/{projectId}")]

@@ -1,7 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthScreens } from "../Constants/Screens";
 import { AuthStackParamList } from "../Types/NavigatorTypes";
-import MainTabs from "./MainTabs";
 import ProjectDetails from "../Screens/Auth/ProjectDetails";
 import ProjectForm from "../Screens/Auth/ProjectForm";
 import ProjectsProvider from "../Contexts/ProjectsContext";
@@ -12,6 +11,8 @@ import { useAuth } from "../Contexts/AuthContext";
 import { usePushToken } from "../Hooks/usePushToken";
 import GoogleAuthProvider from "../Contexts/GoogleAuthContext";
 import CalendarConfigs from "../Components/Calendar/CalendarConfigs";
+import CustomText from "../Components/Common/CustomText";
+import MainTabs from "./MainTabs";
 
 
 export default function AuthNavigator() {
@@ -26,7 +27,7 @@ export default function AuthNavigator() {
   const { user } = useAuth();
 
   if(!user) {
-    return;
+    return <CustomText>Você precisa estar logado para acessar esta área.</CustomText>;
   }
 
   usePushToken(user.id);

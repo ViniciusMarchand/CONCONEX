@@ -26,13 +26,20 @@
     "experiments": {
       "tsconfigPaths": true
     },
-    "plugins": [
-      [
-        "expo-font",
-        "@react-native-google-signin/google-signin"
+     "plugins": [
+      "expo-font", 
+      "@react-native-google-signin/google-signin", 
+      [ 
+        "expo-build-properties", 
+        { 
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
       ],
-      "expo-secure-store"
+      "expo-secure-store" 
     ],
+
     "orientation": "portrait",
     "icon": "./Assets/logos/icone_dark_mode.png",
     "userInterfaceStyle": "light",
@@ -45,13 +52,16 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.conconex"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./Assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "usesCleartextTraffic": true,
       "package": "com.conconex"
     },
     "extra": {
