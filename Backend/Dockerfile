@@ -6,8 +6,7 @@ RUN dotnet restore
 
 COPY . ./
 RUN dotnet tool install --global dotnet-ef
-ENV PATH="$PATH:/root/.dotnet/tools"
-RUN dotnet ef database update
+RUN /root/.dotnet/tools/dotnet-ef database update
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
