@@ -13,4 +13,4 @@ COPY --from=build-env /app/out .
 
 EXPOSE 80
 
-ENTRYPOINT ["dotnet", "SeuApp.dll"]
+ENTRYPOINT ["dotnet", "Backend.dll"]
