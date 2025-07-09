@@ -13,7 +13,8 @@ public class ProjectService(
     IUserRepository userRepository,
     IAuthService authService,
     S3Service s3Service,
-    IMessageRepository messageRepository
+    IMessageRepository messageRepository,
+    IPushNotificationService pushNotificationService
 ) : IProjectService
 {
 
@@ -22,6 +23,8 @@ public class ProjectService(
     private readonly IAuthService _authService = authService;
     private readonly S3Service _s3Service = s3Service;
     private readonly IMessageRepository _messageRepository = messageRepository;
+        private readonly IPushNotificationService _notificationService = pushNotificationService;
+
 
     public async Task<IEnumerable<Project>> FindAllAsync()
     {
@@ -94,6 +97,12 @@ public class ProjectService(
             project.Image = path;
         }
 
+        string? receiverId = await _authService.FindAnotherUserIdFromProject(id, userId);
+
+        if (receiverId != null)
+        {
+            await _notificationService.SendPushNotificationAsync(receiverId, $"{project.Title}", "Status do projeto atualizado!");
+        }
 
         return await _projectRepository.UpdateAsync(project);
     }
