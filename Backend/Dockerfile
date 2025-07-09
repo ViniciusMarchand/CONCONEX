@@ -5,9 +5,6 @@ COPY *.csproj ./
 RUN dotnet restore
 
 COPY . ./
-RUN dotnet tool install --global dotnet-ef
-RUN /root/.dotnet/tools/dotnet-ef database update
-
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
