@@ -19,9 +19,9 @@ public class PushNotificationService(IUserPushTokenRepository tokenRepository, I
         {
             var payload = new
             {
-                To = token.Token,
-                Title = title,
-                Body = body
+                to = token.Token,
+                title = title,
+                body = body
             };
 
             var json = JsonSerializer.Serialize(payload);

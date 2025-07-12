@@ -13,8 +13,6 @@ public class UserPushTokenService(IUserPushTokenRepository repository, IAuthRepo
     {
         var existingToken = await _repository.GetTokenByTokenAndUserIdAsync(token, userId);
         User user = await _authRepository.FindByIdAsync(userId);
-        Console.WriteLine("PASSOU AQUI2321");
-
 
         if (existingToken == null)
         {
@@ -24,7 +22,7 @@ public class UserPushTokenService(IUserPushTokenRepository repository, IAuthRepo
                 User = user,
                 Token = token,
             };
-            Console.WriteLine("PASSOU AQUI");
+
             await _repository.AddTokenAsync(userPushToken);
         }
     }
