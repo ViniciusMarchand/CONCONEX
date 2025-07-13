@@ -40,7 +40,9 @@ export default function ProjectDetails({ route }: Props) {
   const { fontColor } = useColors();
   const { goBack, navigate } = useNavigation<StackNavigationProp<AuthStackParamList>>();
   const [project, setProject] = useState(route.params);
+  const [key, setKey] = useState(0);
 
+  
   const { userInfo, deadline, description, id, status, title, adminId } = project;
 
   const [data, setData] = useState<ProjectStage[]>([]);
@@ -51,6 +53,7 @@ export default function ProjectDetails({ route }: Props) {
   const findProjectStages = useCallback(async () => {
     const res: any = await projectStagesApi.findByProjectId(id);
     setData(res.data);
+    setKey(Math.random());
   }, []);
 
   useEffect(() => {
@@ -116,6 +119,7 @@ export default function ProjectDetails({ route }: Props) {
         {
           data &&
           <FlatList
+          key={key}
             ListHeaderComponent={
               <View className="gap-2 pb-6">
                 <Title>{title}</Title>
