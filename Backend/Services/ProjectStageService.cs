@@ -8,13 +8,21 @@ using Org.BouncyCastle.Crypto.Engines;
 
 namespace Backend.Services;
 
-public class ProjectStageService(IProjectStageRepository projectStageRepository, IAuthService authService, IProjectRepository projectRepository, S3Service s3Service) : IProjectStageService
+public class ProjectStageService(
+    IProjectStageRepository projectStageRepository,
+    IAuthService authService,
+    IProjectRepository projectRepository,
+    S3Service s3Service,
+    IPushNotificationService pushNotificationService
+) 
+: IProjectStageService
 {
 
     private readonly IProjectStageRepository _projectStageRepository = projectStageRepository;
     private readonly IAuthService _authService = authService;
     private readonly IProjectRepository _projectRepository = projectRepository;
     private readonly S3Service _s3Service = s3Service;
+    IPushNotificationService _pushNotificationService = pushNotificationService;
 
     public async Task<IEnumerable<ProjectStage>> FindAllAsync()
     {
@@ -35,7 +43,6 @@ public class ProjectStageService(IProjectStageRepository projectStageRepository,
     {
 
         Project project = await _projectRepository.FindByIdAsync(dto.ProjectId) ?? throw new EntityNotFoundException("Project not found.");
-
 
         ProjectStage projectStage = new()
         {
@@ -62,6 +69,13 @@ public class ProjectStageService(IProjectStageRepository projectStageRepository,
         projectStage.Description = dto.Description;
         projectStage.Status = dto.Status;
         projectStage.Deadline = dto.Deadline;
+
+        string? receiverId = await _authService.FindAnotherUserIdFromProject(id, userId);
+
+        if (receiverId != null)
+        {
+            await _pushNotificationService.SendPushNotificationAsync(receiverId, $"{project.Title}", $"Etapa {dto.Title} atualizada!");
+        }
 
         return await _projectStageRepository.UpdateAsync(projectStage);
     }
