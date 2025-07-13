@@ -13,6 +13,8 @@ import GoogleAuthProvider from "../Contexts/GoogleAuthContext";
 import CalendarConfigs from "../Components/Calendar/CalendarConfigs";
 import CustomText from "../Components/Common/CustomText";
 import MainTabs from "./MainTabs";
+import { useEffect } from "react";
+import NotificationApi from "../Api/NotificationApi";
 
 
 export default function AuthNavigator() {
@@ -34,7 +36,7 @@ export default function AuthNavigator() {
   
   return (
     <GoogleAuthProvider>
-      <SignalRProvider userId={user.id} >
+      <SignalRProvider userId={user.id} > 
         <ProjectsProvider>
           <Stack.Navigator
             screenOptions={{

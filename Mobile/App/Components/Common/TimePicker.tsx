@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import CustomText from './CustomText'; // Assuming you have this component
 import { format } from 'date-fns';
 import useColors from '@/App/Hooks/useColors';
@@ -22,7 +22,7 @@ const CustomDateTimePicker = ({ onDateTimeSelect, initialDateTime = new Date(), 
   const [hours, setHours] = useState<number[]>([]);
   const [minutes, setMinutes] = useState<number[]>([]);
   const [hasAlreadySelected, setHasAlreadySelected] = useState(false);
-
+  
   useEffect(() => {
     if (!periods || !dayOfWeek) {
       setHours(Array.from({ length: 16 }, (_, i) => i + 7));
@@ -35,10 +35,12 @@ const CustomDateTimePicker = ({ onDateTimeSelect, initialDateTime = new Date(), 
 
     const periodsForDay = periods.filter(p => p.dayOfWeek === dayOfWeek);
 
+
     periodsForDay.forEach(period => {
       const startHour = new Date(period.start).getHours();
       availableHoursSet.add(startHour);
     });
+
 
     if (events && events.length > 0 && selectedDate) {
       const eventsOnSelectedDay = events.filter(event => format(new Date(event.start.dateTime), 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd'));
@@ -60,11 +62,6 @@ const CustomDateTimePicker = ({ onDateTimeSelect, initialDateTime = new Date(), 
       setSelectedHour(filteredHours[0]);
     }
   }, [periods, dayOfWeek, events, selectedDate]);
-
-
-  const handleDateChange = (newDate: Date) => {
-    setSelectedDate(newDate);
-  };
 
   const handleTimeSelect = (hour: number, minute: number) => {
     setSelectedHour(hour);
@@ -115,7 +112,7 @@ const CustomDateTimePicker = ({ onDateTimeSelect, initialDateTime = new Date(), 
               {hours.map((hour) => (
                 <TouchableOpacity
                   key={`hour-${hour}`}
-                  className={`py-2 rounded-md ${selectedHour === hour ? 'bg-blue-200' : ''}`}
+                  className={`py-2 rounded-md pl-2 ${selectedHour === hour ? 'bg-secondary-dark' : ''}`}
                   onPress={() => handleTimeSelect(hour, selectedMinute === null ? 0 : selectedMinute)}
                 >
                   <CustomText className={`text-base ${fontColor}`}>{String(hour).padStart(2, '0')}</CustomText>
@@ -130,7 +127,7 @@ const CustomDateTimePicker = ({ onDateTimeSelect, initialDateTime = new Date(), 
               {getAvailableMinutesForHour(selectedHour).map((minute) => (
                 <TouchableOpacity
                   key={`minute-${minute}`}
-                  className={`py-2 rounded-md ${selectedMinute === minute ? 'bg-blue-200' : ''}`}
+                  className={`py-2 rounded-md pl-2 ${selectedMinute === minute ? 'bg-secondary-dark' : ''}`}
                   onPress={() => handleTimeSelect(selectedHour === null ? 7 : selectedHour, minute)}
                 >
                   <CustomText className={`text-base ${fontColor}`}>{String(minute).padStart(2, '0')}</CustomText>
@@ -150,8 +147,5 @@ const CustomDateTimePicker = ({ onDateTimeSelect, initialDateTime = new Date(), 
   );
 };
 
-const styles = StyleSheet.create({
-  // You can add additional styles here if needed
-});
 
 export default CustomDateTimePicker;

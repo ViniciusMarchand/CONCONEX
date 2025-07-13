@@ -5,7 +5,7 @@ import CalendarApi from '@/App/Api/CalendarApi';
 import CustomText from '../Common/CustomText';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import useColors from '@/App/Hooks/useColors';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '@/App/Types/NavigatorTypes';
 import { AuthScreens } from '@/App/Constants/Screens';
@@ -40,6 +40,13 @@ const Events = () => {
     useEffect(() => {
         getEvents();
     }, [getEvents]);
+
+
+      useFocusEffect(
+        useCallback(() => {
+          getEvents();
+        }, [])
+      );
 
     if (loading) {
         return <CustomText className="p-4">Carregando eventos...</CustomText>;

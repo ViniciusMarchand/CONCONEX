@@ -1,17 +1,9 @@
-import authApi from "@/App/Api/AuthApi";
-import { googleCalendarClientId, googleCalendarClientSecret } from "@/App/Constants/Env";
 import { useGoogleAuth } from "@/App/Contexts/GoogleAuthContext";
-import * as AuthSession from 'expo-auth-session';
-import { ClearGoogleAccessToken, setAccessToken, setGoogleAccessToken } from "@/App/Utils/SecureStore";
 import {
   GoogleSignin,
   GoogleSigninButton,
-  isErrorWithCode,
-  statusCodes,
 } from "@react-native-google-signin/google-signin";
 import { TouchableOpacity } from "react-native";
-import { useEffect, useState } from "react";
-import CustomText from "./CustomText";
 
 export default function GoogleLoginButton() {
 

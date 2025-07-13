@@ -1,5 +1,6 @@
 import { CalendarConfigurationDTO } from "../Components/Calendar/CalendarConfigs";
 import { useGoogleAuth } from "../Contexts/GoogleAuthContext";
+import { ProjectResponseDTO } from "../Types";
 import { ClearGoogleAccessToken } from "../Utils/SecureStore";
 import { Axios, AxiosGoogle } from "./Axios";
 
@@ -8,8 +9,8 @@ const APP_EVENT_UUID = 'a1b2c3d4-e5f6-7890-1234-567890abcdef';
 interface EventDetails {
     dateTime: Date;
     userEmail: string;
-    projectTitle: string,
     emailReceiver: string;
+    project:ProjectResponseDTO;
 }
 
 const controllerBase = 'api/calendar-configurations';
@@ -20,14 +21,14 @@ const CalendarApi = {
         const calendarId = 'primary';
         const URL = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?conferenceDataVersion=1`;
 
-        const { dateTime, userEmail, emailReceiver, projectTitle } = eventDetails;
+        const { dateTime, userEmail, emailReceiver, project } = eventDetails;
 
-        const startDateTime = new Date(dateTime.getTime() + 3 * 60 * 60 * 1000);
-        const endDateTime = new Date(dateTime.getTime() + 4 * 60 * 60 * 1000);
+        const startDateTime = new Date(dateTime);
+        const endDateTime = new Date(startDateTime.getTime() + 30 * 60 * 1000); 
 
         const event = {
-            summary: `Reunião com ${emailReceiver}`,
-            description: projectTitle,
+            summary: project.title ,
+            description: project.description,
             start: {
                 dateTime: startDateTime.toISOString(),
                 timeZone: 'America/Sao_Paulo',
@@ -41,7 +42,7 @@ const CalendarApi = {
                 { email: emailReceiver },
             ],
             extendedProperties: {
-                private: {
+                shared: {
                     appUuid: APP_EVENT_UUID,
                     scheduledBy: userEmail,
                 },
@@ -89,7 +90,7 @@ const CalendarApi = {
         today.setHours(0, 0, 0, 0);
         const timeMin = today.toISOString();
 
-        const filter = `privateExtendedProperty=appUuid=${APP_EVENT_UUID}`;
+        const filter = `sharedExtendedProperty=appUuid=${APP_EVENT_UUID}`;
 
         try {
             const res = await AxiosGoogle.get(`${URL}?${filter}&timeMin=${timeMin}`, {

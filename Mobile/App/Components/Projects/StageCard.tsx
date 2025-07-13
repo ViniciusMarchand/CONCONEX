@@ -32,6 +32,7 @@ interface Props {
 export default function StageCard({ stage, index, refresh, isAuth }: Props) {
     const { id, title, description, deadline, status, images, projectId } = stage;
     const [focusedImageIndex, setFocusedImageIndex] = useState(0);
+    const [key, setKey] = useState(0);
 
     const { fontColor } = useColors();
     const { navigate } = useNavigation<StackNavigationProp<AuthStackParamList>>();
@@ -71,6 +72,10 @@ export default function StageCard({ stage, index, refresh, isAuth }: Props) {
         }
     };
 
+    const refreshCarousel = () => {
+        setKey(Math.random());
+    }
+
     return (
         <CardLayout className="p-2 flex justify-between mb-4">
             <View className="px-3 pt-1 gap-2  flex-col justify-between">
@@ -83,7 +88,7 @@ export default function StageCard({ stage, index, refresh, isAuth }: Props) {
                                     <TouchableOpacity onPress={() => pickImageAsync()}>
                                         <MaterialCommunityIcons name="image-plus" size={24} color={fontColor} />
                                     </TouchableOpacity>
-                                    <RemoveProjectStageImageModal refresh={refresh} id={images[focusedImageIndex]?.id} setIndexRef={setFocusedImageIndex}/>
+                                    <RemoveProjectStageImageModal refreshCarousel={refreshCarousel} refresh={refresh} id={images[focusedImageIndex]?.id} setIndexRef={setFocusedImageIndex}/>
 
                                     <TouchableOpacity onPress={() => navigate(ProjectStageFormScreen, stage)}>
                                         <Feather name="edit" size={24} color={fontColor} />
@@ -100,7 +105,12 @@ export default function StageCard({ stage, index, refresh, isAuth }: Props) {
                         </Title>
                         {
                             images.length > 0 &&
-                            <CarouselStage images={images} indexRef={focusedImageIndex} setIndexRef={setFocusedImageIndex}/>
+                            <CarouselStage 
+                                images={images} 
+                                indexRef={focusedImageIndex} 
+                                setIndexRef={setFocusedImageIndex}
+                                key={key}
+                            />
                         }
                         <CustomText
                             className="text-justify"

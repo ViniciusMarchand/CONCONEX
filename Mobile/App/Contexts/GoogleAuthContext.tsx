@@ -2,8 +2,6 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 import { contextError } from "../Constants/Errors";
 import { ClearGoogleAccessToken, getGoogleAccessToken, setGoogleAccessToken } from "../Utils/SecureStore";
 import { GoogleSignin, isErrorWithCode, statusCodes } from "@react-native-google-signin/google-signin";
-import { googleCalendarClientId, googleCalendarClientSecret } from "../Constants/Env";
-import authApi from "../Api/AuthApi";
 
 interface Props {
   children: ReactNode;
@@ -45,9 +43,17 @@ export default function GoogleAuthProvider({ children }: Props) {
   const [token, setToken] = useState<string|null>("");
   
   useEffect(() => {
-    // ClearGoogleAccessToken();
-    setToken(null);
-    setToken(getGoogleAccessToken());
+    const fetchGoogleToken = async () => {
+      try {
+        const tokenGet = await getGoogleAccessToken();
+        setToken(tokenGet);
+      } catch (error) {
+        console.error("Erro ao obter o token do Google:", error);
+      }
+      };
+  
+    fetchGoogleToken();
+
   },[]);
 
   const getUserInfo = async () => {
@@ -95,7 +101,7 @@ export default function GoogleAuthProvider({ children }: Props) {
     };
   
     GoogleSignin.configure({
-      webClientId: "531901674924-cu2ceuah3vp2givrtumr7qdmk7h7lam7.apps.googleusercontent.com",
+      webClientId: "835471040257-cmtisu43jkjatfufgugjj87grblburbq.apps.googleusercontent.com",
       scopes: ["https://www.googleapis.com/auth/calendar.events", "profile", "email"],
       offlineAccess: true,
       

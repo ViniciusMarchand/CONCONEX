@@ -10,7 +10,7 @@ import { NoAuthStackParamList } from "@/App/Types/NavigatorTypes";
 import { errorToast, successToast } from "@/App/Utils/Toasts";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 
 type EmailVerificationRouteProp = RouteProp<
@@ -32,9 +32,18 @@ export default function EmailVerification({ route } : Props) {
     const { LoginScreen } = NoAuthScreens;
     
 
+    const [hasResent, setHasResent] = useState(false);
+
     useEffect(() => {
-        resendEmail();
-    },[])
+        const timeout = setTimeout(() => {
+            if (!hasResent) {
+                resendEmail();
+                setHasResent(true);
+            }
+        }, 100);
+
+        return () => clearTimeout(timeout);
+    }, [hasResent]);
 
     const resendEmail = async () => {
         try {

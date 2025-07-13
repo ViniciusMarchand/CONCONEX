@@ -4,7 +4,7 @@ import TextInput from '@/App/Components/Common/InputText';
 import { LockIcon, MailIcon } from '@/App/Components/Ui/icon';
 import Logo from 'App/Components/Common/Logo';
 import Title from 'App/Components/Common/Title';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { Formik } from 'formik';
 import Line from '@/App/Components/Common/Line';
 import TouchableText from '@/App/Components/Common/TouchableText';

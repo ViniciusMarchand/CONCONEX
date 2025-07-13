@@ -27,8 +27,8 @@ Axios.interceptors.request.use(
 );
 
 AxiosGoogle.interceptors.request.use(
-     (config) => {
-        const token = getGoogleAccessToken(); 
+     async (config) => {
+        const token = await getGoogleAccessToken(); 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
