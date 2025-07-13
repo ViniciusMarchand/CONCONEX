@@ -95,7 +95,7 @@ export default function ProjectDetails({ route }: Props) {
 
 
   return (
-    <Layout className="w-full h-fuil px-6 my-5">
+    <Layout className="w-full h-fuil px-6 mt-5">
       <View className="flex-1 pt-10 w-full gap-3">
         <View className="flex-row justify-between">
           <Pressable onPress={() => goBack()}>
@@ -130,11 +130,14 @@ export default function ProjectDetails({ route }: Props) {
                         numberOfLines={1}
                         ellipsizeMode="tail"
                       >{`${userInfo.firstName} ${userInfo.lastName}`}</CustomText>
-                      <TouchableOpacity
-                        onPress={async () => await removeUserFromProject(userInfo.userId)}>
-                        <AntDesign name="deleteuser" size={24} color={fontColor} 
-                        className="ml-2 bg-red-600 dark:bg-red-600 p-1 rounded-[10px] border-tertiary dark:border-tertiary-dark"/>
-                      </TouchableOpacity>
+                      {
+                        isAuth && 
+                        <TouchableOpacity
+                          onPress={async () => await removeUserFromProject(userInfo.userId)}>
+                          <AntDesign name="deleteuser" size={24} color={fontColor} 
+                          className="ml-2 bg-red-600 dark:bg-red-600 p-1 rounded-[10px] border-tertiary dark:border-tertiary-dark"/>
+                        </TouchableOpacity>
+                      }
                     </>
                       : <CustomText className="text-sm">Sem usuários cadastrados no projeto</CustomText>
                   }
@@ -181,6 +184,5 @@ export default function ProjectDetails({ route }: Props) {
       }
       <AddUserModal showModal={showModal} setShowModal={setShowModal} projectId={id} refresh={updateProjectInfo} />
     </Layout>
-
   )
 }

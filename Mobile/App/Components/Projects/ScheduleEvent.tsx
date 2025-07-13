@@ -17,10 +17,11 @@ import CalendarApi from "@/App/Api/CalendarApi";
 import { useGoogleAuth } from "@/App/Contexts/GoogleAuthContext";
 import { CalendarConfigurationDTO } from "../Calendar/CalendarConfigs";
 import { fetchUserInfoAsync } from "expo-auth-session";
+import NotificationApi from "@/App/Api/NotificationApi";
 
 interface Props {
   project: ProjectResponseDTO,
-  userId:string;
+  userId: string;
 }
 
 export default function ScheduleMeeting({ project, userId }: Props) {
@@ -38,6 +39,7 @@ export default function ScheduleMeeting({ project, userId }: Props) {
       try {
         const config = await CalendarApi.findByUserId(userId);
         setCalendarConfigs(config);
+
       } catch (error: any) {
 
       }
@@ -53,14 +55,14 @@ export default function ScheduleMeeting({ project, userId }: Props) {
     }
     fetchGoogleAuthConfig();
   }
-  , [login]);
+    , [login]);
 
   const onChange = (e: Date) => {
     setDateTime(e);
   }
 
   const openModal = () => {
-    if(!calendarConfigs) {
+    if (!calendarConfigs) {
       errorToast("O usuário não possui configurações de calendário.");
       return;
     } else {
@@ -69,54 +71,68 @@ export default function ScheduleMeeting({ project, userId }: Props) {
   }
 
   const schedule = async () => {
-    if(isLoading) {
+    if (isLoading) {
       return;
     }
-    if(!dateTime) {
+    if (!dateTime) {
       errorToast("Por favor, selecione uma data e hora.");
       return;
     }
 
-    if(!calendarConfigs) {
+    if (!calendarConfigs) {
       return;
     }
 
-    if(!hasALreadySelected) {
+    if (!hasALreadySelected) {
       errorToast("Por favor, selecione a hora e minuto.");
       return;
     }
+
+    
     try {
       const userInfo = await getUserInfo();
       const userEmail = userInfo.email;
       if (!userEmail || !calendarConfigs.emailGoogle) {
         return;
       }
-      
+
       setIsLoading(true);
 
       await CalendarApi.createMeeting({
+
         dateTime: dateTime,
         userEmail: userEmail,
-        projectTitle: project.title,
-        emailReceiver:calendarConfigs?.emailGoogle 
+        project:project,
+        emailReceiver: calendarConfigs?.emailGoogle
       });
+
+      await NotificationApi.send({
+        to: project.userInfo.userId,
+        title: project.title,
+        body: "Reunião marcada, verifique seu google agenda!"
+      })
       setShowModal(false);
     } catch (error: any) {
       if (error?.response?.status === 401) {
         try {
-            const userInfo = await getUserInfo();
-        const userEmail = userInfo.email;
+          const userInfo = await getUserInfo();
+          const userEmail = userInfo.email;
 
           await login();
           await CalendarApi.createMeeting({
             dateTime: dateTime,
             userEmail: userEmail,
-            projectTitle: project.title,
+            project:project,
             emailReceiver: calendarConfigs.emailGoogle ?? ""
           });
+          await NotificationApi.send({
+            to: project.userInfo.userId,
+            title: project.title,
+            body: "Reunião marcada, verifique seu google agenda!"
+          })
           setShowModal(false);
-        } catch (reloginError) {
-          errorToast("Ocorreu um erro ao tentar agendar.");
+        } catch (reloginError: any) {
+          errorToast("Ocorreu um erro ao tentar agendar. ");
         }
       } else {
         errorToast("Ocorreu um erro ao tentar agendar.");
@@ -128,7 +144,7 @@ export default function ScheduleMeeting({ project, userId }: Props) {
   return (
     <>
       <TouchableOpacity onPress={() => openModal()}>
-        <Entypo name="calendar" size={24} color={fontColor} style={ !calendarConfigs ? {opacity:0.4} : {}}/>
+        <Entypo name="calendar" size={24} color={fontColor} style={!calendarConfigs ? { opacity: 0.4 } : {}} />
       </TouchableOpacity>
       <Modal
         isOpen={showModal}
@@ -146,10 +162,10 @@ export default function ScheduleMeeting({ project, userId }: Props) {
               </CustomText>
             </View>
             <View className="w-full flex justify-center items-center">
-              <CalendarWithDisabling 
-              onChange={onChange} 
-              avaliablePeriods={calendarConfigs?.periods}
-              setHasAlreadySelected={setHasAlreadySelected}
+              <CalendarWithDisabling
+                onChange={onChange}
+                avaliablePeriods={calendarConfigs?.periods}
+                setHasAlreadySelected={setHasAlreadySelected}
               />
             </View>
           </ModalBody>

@@ -25,6 +25,11 @@ export default function Profile() {
                             <CustomText className="text-lg font-semibold text-gray-700">Email:</CustomText>
                             <CustomText className="text-xl text-gray-900">{user?.email}</CustomText>
                         </View>
+
+                        <View className="mb-6">
+                            <CustomText className="text-lg font-semibold text-gray-700">Username:</CustomText>
+                            <CustomText className="text-xl text-gray-900">{user?.username}</CustomText>
+                        </View>
                     </View>
 
                     <TouchableOpacity

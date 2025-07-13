@@ -41,7 +41,7 @@
     ],
 
     "orientation": "portrait",
-    "icon": "./Assets/logos/icone_dark_mode.png",
+    "icon": "./Assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./Assets/logos/icone_dark_mode.png",

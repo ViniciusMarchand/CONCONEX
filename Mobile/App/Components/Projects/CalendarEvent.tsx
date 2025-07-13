@@ -26,6 +26,7 @@ const CalendarWithDisabling = ({ onChange, avaliablePeriods, setHasAlreadySelect
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [Events, setEvents] = useState<any[]>([]);
   const [dayOfWeek, setDayOfWeek] = useState<string | null>(null);
+
   const getDisabledDays = useCallback(() => {
     const disabled: Record<string, { disabled: boolean }> = {};
     const today = new Date();
@@ -45,22 +46,22 @@ const CalendarWithDisabling = ({ onChange, avaliablePeriods, setHasAlreadySelect
     const allDaysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const availableDaysOfWeek = [...new Set(avaliablePeriods.map(p => p.dayOfWeek))];
     const unavailableDaysOfWeek = allDaysOfWeek.filter(day => !availableDaysOfWeek.includes(day));
-    
+
     const checkDayIsFullyBooked = (date: Date, eventsOnDate: any[], periods: AvailablePeriodDTO[] | undefined): boolean => {
       if (!periods || periods.length === 0) {
         return eventsOnDate.length > 0;
       }
-      
-      const dayOfWeekToCheck = format(date, 'EEEE', { locale: enUS});
+
+      const dayOfWeekToCheck = format(date, 'EEEE', { locale: enUS });
       const periodsForDay = periods.filter(p => p.dayOfWeek === dayOfWeekToCheck);
-      
+
       if (periodsForDay.length === 0) {
         return eventsOnDate.length > 0;
       }
-      
+
       return eventsOnDate.length >= periodsForDay.length;
     };
-    
+
     let currentDate = new Date(today);
     while (currentDate <= futureDate) {
       const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(currentDate);
@@ -68,14 +69,14 @@ const CalendarWithDisabling = ({ onChange, avaliablePeriods, setHasAlreadySelect
       if (unavailableDaysOfWeek.includes(weekday)) {
         disabled[formattedDate] = { disabled: true };
       }
-      
+
       if (Events && Events.length > 0) {
         const eventsOnCurrentDate = Events.filter(event => format(new Date(event.start.dateTime), 'yyyy-MM-dd') === formattedDate);
         if (checkDayIsFullyBooked(currentDate, eventsOnCurrentDate, avaliablePeriods)) {
           disabled[formattedDate] = { disabled: true };
         }
       }
-      
+
       currentDate.setDate(currentDate.getDate() + 1);
     }
     return disabled;
@@ -89,27 +90,32 @@ const CalendarWithDisabling = ({ onChange, avaliablePeriods, setHasAlreadySelect
         setEvents(res);
 
       } catch (error) {
-        
+
       }
     }
     fecthEvents();
-    }, []);
+  }, []);
 
   const onDayPress = (day: { dateString: string }) => {
     const isDisabledDay = getDisabledDays()[day.dateString]?.disabled;
     if (!isDisabledDay) {
-      const selectedDayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(day.dateString));
+      const selectedDayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(day.dateString + 'T00:00:00'));
       setDayOfWeek(selectedDayOfWeek);
+
       setSelectedDate(day.dateString);
-      const newDateTime = new Date(day.dateString);
+      const newDateTime = new Date(day.dateString + 'T03:00:00');
 
       if (avaliablePeriods && avaliablePeriods.length > 0 && selectedDayOfWeek) {
         const firstPeriodForDay = avaliablePeriods.find(p => p.dayOfWeek === selectedDayOfWeek);
         if (firstPeriodForDay) {
-          const [hourStr, minuteStr] = firstPeriodForDay.start.split(':');
+          
+          const hourStr = format(firstPeriodForDay.start, 'HH');
+          const minuteStr = format(firstPeriodForDay.start, 'mm');
+
           newDateTime.setHours(parseInt(hourStr, 10));
           newDateTime.setMinutes(parseInt(minuteStr, 10));
           setDateTime(newDateTime);
+
         } else {
           setDateTime(new Date(day.dateString));
         }
@@ -132,6 +138,7 @@ const CalendarWithDisabling = ({ onChange, avaliablePeriods, setHasAlreadySelect
     }
     // setShowTimePicker(false);
     const dateTimeAux = dateTime;
+
     dateTimeAux.setHours(selectedTime.getHours());
     dateTimeAux.setMinutes(selectedTime.getMinutes());
     setDateTime(dateTimeAux);
@@ -176,7 +183,7 @@ const CalendarWithDisabling = ({ onChange, avaliablePeriods, setHasAlreadySelect
 
       {selectedDate ? (
         <CustomText className="mt-4 text-center" style={{ color: '#fff' }}>
-          Agendamento para: {format(new Date(selectedDate), 'dd/MM/yyyy', { locale: ptBR })}
+          Agendamento para: {format(selectedDate+"T03:00:00.000Z", 'dd/MM/yyyy')}
           {dateTime && showTimePicker === false ? ` às ${format(dateTime, 'HH:mm', { locale: ptBR })}` : ''}
         </CustomText>
       ) : (

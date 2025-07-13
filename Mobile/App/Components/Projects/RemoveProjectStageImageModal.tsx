@@ -16,10 +16,11 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 interface Props {
   refresh:Function,
   id?:string,
-  setIndexRef:Function
+  setIndexRef:Function,
+  refreshCarousel:Function,
 }
 
-export default function RemoveProjectStageImageModal({ refresh, id, setIndexRef }: Props) {
+export default function RemoveProjectStageImageModal({ refresh, id, setIndexRef, refreshCarousel }: Props) {
 
   const [showModal, setShowModal] = useState(false);
   const { fontColor } = useColors();
@@ -32,7 +33,8 @@ export default function RemoveProjectStageImageModal({ refresh, id, setIndexRef 
         await projectStagesApi.removeImage(id);
         successToast("Imagem removida com sucesso.");
         await findProjects();
-        refresh();
+        await refresh();
+        refreshCarousel();
         setIndexRef(0);
         setShowModal(false);
       }

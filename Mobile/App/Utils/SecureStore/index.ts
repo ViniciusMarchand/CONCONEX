@@ -13,8 +13,8 @@ export const logoutAsync = async () => {
     await SecureStore.deleteItemAsync(AccessTokenKey);
 }
 
-export const getGoogleAccessToken = () => {
-    return SecureStore.getItem(GoogleAccessTokenKey);
+export const getGoogleAccessToken = async () => {
+    return await SecureStore.getItemAsync(GoogleAccessTokenKey);
 }
 
 export const setGoogleAccessToken = (token:string) => {
