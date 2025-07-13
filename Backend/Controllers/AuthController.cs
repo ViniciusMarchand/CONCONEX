@@ -56,9 +56,9 @@ public class AuthController
         {
             User user = await _authService.Register(dto);
 
-            string code = await _verificationCodeService.GenerateVerificationCode(user.Email!);
+            // string code = await _verificationCodeService.GenerateVerificationCode(user.Email!);
 
-            _ = Task.Run(() => _emailService.SendEmailAsync(user.Email!, "Código para a confirmação do email", code));
+            // _ = Task.Run(() => _emailService.SendEmailAsync(user.Email!, "Código para a confirmação do email", code));
 
             return Ok("User registred");
         }
