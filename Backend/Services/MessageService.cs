@@ -67,7 +67,7 @@ public class MessageService(
         {
             await _hubContext.Clients.Group(receiverId).SendAsync("ReceiveMessage", message);
             Console.WriteLine($"Message sent to user {userId}");
-            await _notificationService.SendPushNotificationAsync(receiverId, $"{message.UserFirstName} {message.UserFirstName}", message.Content);
+            await _notificationService.SendPushNotificationAsync(receiverId, $"{message.UserFirstName} {message.UserLastName}", message.Content);
         }
 
         return message;
