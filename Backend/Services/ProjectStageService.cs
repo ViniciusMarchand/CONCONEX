@@ -70,7 +70,7 @@ public class ProjectStageService(
         projectStage.Status = dto.Status;
         projectStage.Deadline = dto.Deadline;
 
-        string? receiverId = await _authService.FindAnotherUserIdFromProject(id, userId);
+        string? receiverId = await _authService.FindAnotherUserIdFromProject(project.Id, userId);
 
         if (receiverId != null)
         {
