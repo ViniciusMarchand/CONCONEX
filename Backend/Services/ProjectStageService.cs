@@ -22,7 +22,7 @@ public class ProjectStageService(
     private readonly IAuthService _authService = authService;
     private readonly IProjectRepository _projectRepository = projectRepository;
     private readonly S3Service _s3Service = s3Service;
-    IPushNotificationService _pushNotificationService = pushNotificationService;
+    private readonly IPushNotificationService _pushNotificationService = pushNotificationService;
 
     public async Task<IEnumerable<ProjectStage>> FindAllAsync()
     {
